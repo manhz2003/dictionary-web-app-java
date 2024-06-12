@@ -20,9 +20,9 @@ const Header = () => {
   return (
     <header className="h-[65px] border-b-2 border-gray-200 shadow-lg flex items-center">
       <div className="w-full flex items-center gap-20 relative">
-        <div className="ml-[56px] cursor-pointer">
+        <Link to={paths.Home} className="ml-[56px] cursor-pointer">
           <img className="w-[110px]" src={logo} alt="logo" />
-        </div>
+        </Link>
         <div className="absolute left-[50%]">
           <ul className="flex gap-14 text-[16px] font-medium translate-x-[-50%]">
             {["Home", "Quizz", "Discover", "Login"].map((item, index) => (

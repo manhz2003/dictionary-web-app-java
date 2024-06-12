@@ -7,9 +7,12 @@ export default {
     extend: {
       backgroundImage: theme => ({
         'custom': "url('./src/assets/images/banner.png')",
+        'custom2': "url('./src/assets/images/banner-2.png')",
+        'custom3': "url('./src/assets/images/banner-3.png')",
       }),
       backgroundSize: {
         'zoom': '110%',
+        'zoom-large': '100%',
       },
     },
   },

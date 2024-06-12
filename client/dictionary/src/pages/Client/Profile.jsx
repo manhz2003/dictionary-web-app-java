@@ -1,7 +1,13 @@
+import { Banner } from "../../components/index";
+import icons from "../../ultils/icons";
+const { FaFacebookMessenger, FaPhone, FaMapMarkerAlt } = icons;
+
 const Profile = () => {
   return (
     <div>
-      <h1>Profile</h1>
+      <div className="w-full">
+        <Banner />
+      </div>
     </div>
   );
 };

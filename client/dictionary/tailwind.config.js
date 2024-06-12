@@ -4,7 +4,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: theme => ({
+        'custom': "url('./src/assets/images/banner.png')",
+      }),
+      backgroundSize: {
+        'zoom': '110%',
+      },
+    },
   },
   plugins: [],
 }

@@ -6,7 +6,7 @@ const ClientLayout = () => {
   return (
     <main>
       <Header />
-      <div className="w-full">
+      <div className="w-full pt-[66px]">
         <Outlet />
       </div>
       <Footer />

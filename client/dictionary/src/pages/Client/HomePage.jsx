@@ -1,6 +1,7 @@
 import image1 from "../../assets/images/image-home-1.png";
 import image2 from "../../assets/images/image-home-2.png";
 import image3 from "../../assets/images/image-home-3.png";
+import { BannerBottom } from "../../components/index";
 
 import { Search } from "../../components/index";
 
@@ -80,7 +81,9 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="my-14"></div>
+        <div className="bg-[#f9fafa] w-full h-[493px] flex items-center justify-center">
+          <BannerBottom />
+        </div>
       </div>
     </>
   );

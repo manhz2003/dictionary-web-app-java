@@ -14,7 +14,7 @@ const Footer = () => {
         <div className="flex gap-16 mt-10 justify-center w-full">
           <ul className="text-[#fff] list-none p-0 flex flex-col gap-4 text-[14px]">
             <li>
-              Một sản phẩm thuộc Học viện Tiếng Anh Tư Duy DOL English (IELTS
+              Một sản phẩm với mục đích học tập, không với mục đích thương mại (
               Mạnh Nguyễn)
             </li>
             <li className="flex gap-1">

@@ -2,10 +2,10 @@ const path = {
   HOME: "/",
   PROFILE: "profile",
   RIDDLE: "quizz",
-  VOCABULARY_DETAIL: "vocabulary-detail",
   EXPLORE_WORD: "discover",
-  LOGIN: "login",
-  REGISTER: "register",
+  VOCABULARY_DETAIL: "vocabulary-detail",
+  WORD_LIST: "word-list",
+  SEARCH_RESULT: "search-result",
 
   ADMIN: "admin",
   ADMIN_ROLE: "role",

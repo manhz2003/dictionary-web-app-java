@@ -11,10 +11,11 @@ import {
   VocabularyDetail,
   Riddle,
   ExploreWord,
+  SearchResult,
+  WordList,
 } from "./pages/Client/index";
 
 import { Register, Login, Forgot, Reset } from "./pages/Public";
-
 import { LayoutClient, LayoutAdmin, NotFound } from "./components/index";
 
 const router = createBrowserRouter([
@@ -43,6 +44,14 @@ const router = createBrowserRouter([
       {
         path: path.EXPLORE_WORD,
         element: <ExploreWord />,
+      },
+      {
+        path: path.SEARCH_RESULT,
+        element: <SearchResult />,
+      },
+      {
+        path: path.WORD_LIST,
+        element: <WordList />,
       },
     ],
   },

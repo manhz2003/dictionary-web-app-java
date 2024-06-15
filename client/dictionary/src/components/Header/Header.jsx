@@ -43,7 +43,10 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full h-[65px] border-b-2 border-gray-100 drop-shadow flex items-center bg-white z-50 opacity-100">
+    <header
+      className="fixed top-0 left-0 w-full h-[65px] border-b-2 border-gray-100 drop-shadow 
+    flex items-center bg-white z-50 opacity-100"
+    >
       <div className="w-full flex items-center gap-20 relative">
         <Link
           to={paths.Home}

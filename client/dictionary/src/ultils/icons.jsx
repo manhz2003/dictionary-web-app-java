@@ -9,6 +9,7 @@ import { MdOutlineSpeakerNotes } from "react-icons/md";
 import { IoIosArrowForward } from "react-icons/io";
 import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
+import { FaXmark } from "react-icons/fa6";
 
 const icons = {
   CiSearch,
@@ -22,6 +23,7 @@ const icons = {
   IoIosArrowForward,
   FaRegStar,
   FaStar,
+  FaXmark,
 };
 
 export default icons;

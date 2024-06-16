@@ -31,7 +31,7 @@ const router = createBrowserRouter([
       },
       {
         path: path.PROFILE,
-        element: <VocabularyDetail />,
+        element: <Profile />,
       },
       {
         path: path.VOCABULARY_DETAIL,

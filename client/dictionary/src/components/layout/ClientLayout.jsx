@@ -1,6 +1,5 @@
 import { Header, Footer } from "..";
 import { Navigate, Outlet } from "react-router-dom";
-import path from "../../ultils/path";
 
 const ClientLayout = () => {
   return (

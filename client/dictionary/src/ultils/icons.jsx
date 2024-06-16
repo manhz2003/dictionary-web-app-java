@@ -10,6 +10,9 @@ import { IoIosArrowForward } from "react-icons/io";
 import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
 
 const icons = {
   CiSearch,
@@ -24,6 +27,9 @@ const icons = {
   FaRegStar,
   FaStar,
   FaXmark,
+  FcGoogle,
+  FaEye,
+  FaEyeSlash,
 };
 
 export default icons;

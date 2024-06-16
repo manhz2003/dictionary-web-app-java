@@ -55,6 +55,7 @@ const Register = () => {
                 type="fullname"
                 id="fullname"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
+                placeholder="Nguyễn Văn A"
               />
             </div>
 
@@ -70,6 +71,7 @@ const Register = () => {
                 type="email"
                 id="email"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
+                placeholder="yourname@gmail.com"
               />
             </div>
 
@@ -90,6 +92,7 @@ const Register = () => {
                 id="password"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="********"
               />
             </div>
 
@@ -111,6 +114,7 @@ const Register = () => {
                   id="password"
                   className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="********"
                 />
                 <div
                   className=" absolute top-[50%] translate-y-[-30%] right-5 cursor-pointer"

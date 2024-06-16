@@ -42,6 +42,7 @@ const Login = () => {
                 type="email"
                 id="email"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
+                placeholder="yourname@gmail.com"
               />
             </div>
 
@@ -71,6 +72,7 @@ const Login = () => {
                   type={stateTypePassword ? "password" : "text"}
                   id="password"
                   className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
+                  placeholder="********"
                 />
                 <div
                   className=" absolute top-[50%] translate-y-[-30%] right-5 cursor-pointer"

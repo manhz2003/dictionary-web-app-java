@@ -9,6 +9,7 @@ export default {
         'custom': "url('./src/assets/images/banner.png')",
         'custom2': "url('./src/assets/images/banner-2.png')",
         'custom3': "url('./src/assets/images/banner-3.png')",
+        'custom-avatar': "url('./src/assets/images/bg-avatar.png')",
       }),
       backgroundSize: {
         'zoom': '110%',

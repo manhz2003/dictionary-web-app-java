@@ -57,7 +57,7 @@ const Header = () => {
         </Link>
         <div className="absolute left-[50%]">
           <ul className="flex gap-14 text-[16px] font-medium translate-x-[-50%]">
-            {["Home", "Quizz", "Discover", "Login"].map((item, index) => (
+            {["Home", "Discover", "Login"].map((item, index) => (
               <li
                 key={index}
                 className={`cursor-pointer hover:text-[#2a61d4] ${

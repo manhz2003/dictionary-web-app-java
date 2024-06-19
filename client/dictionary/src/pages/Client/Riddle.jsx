@@ -8,6 +8,7 @@ const Riddle = () => {
       <div className="w-full">
         <Banner />
       </div>
+      <div>tính năng phát triển trong tương lai</div>
     </div>
   );
 };

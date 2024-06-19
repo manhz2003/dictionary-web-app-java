@@ -5,14 +5,38 @@ import icons from "../../ultils/icons";
 const {} = icons;
 
 const WordList = () => {
-  const fakeWords = Array(203).fill("Nhà môi trường học");
+  const fakeWords = Array(603).fill("Nhà môi trường học");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [wordsPerPage] = React.useState(100);
 
   const indexOfLastWord = currentPage * wordsPerPage;
   const indexOfFirstWord = indexOfLastWord - wordsPerPage;
   const currentWords = fakeWords.slice(indexOfFirstWord, indexOfLastWord);
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const [pageGroup, setPageGroup] = React.useState(1);
+  const pagesPerGroup = 6;
+
+  const totalPageGroups = Math.ceil(
+    fakeWords.length / wordsPerPage / pagesPerGroup
+  );
+  const totalPageInCurrentGroup = Math.min(
+    pagesPerGroup,
+    Math.ceil(fakeWords.length / wordsPerPage) - (pageGroup - 1) * pagesPerGroup
+  );
+
+  const paginate = (pageNumber) => {
+    setCurrentPage((pageGroup - 1) * pagesPerGroup + pageNumber);
+  };
+
+  const nextGroup = () => {
+    setPageGroup(pageGroup + 1);
+    setCurrentPage(pageGroup * pagesPerGroup + 1);
+  };
+
+  const previousGroup = () => {
+    setPageGroup(pageGroup - 1);
+    setCurrentPage((pageGroup - 2) * pagesPerGroup + 1);
+  };
 
   return (
     <>
@@ -41,18 +65,22 @@ const WordList = () => {
               ))}
             </div>
             <div className="flex items-center justify-center gap-3 my-10">
-              {[...Array(Math.ceil(fakeWords.length / wordsPerPage))].map(
-                (e, i) => (
-                  <button
-                    className={`py-3 px-4 ${
-                      currentPage === i + 1 ? "text-[#2a61d4] bg-[#f3f4f6]" : ""
-                    } hover:text-[#2a61d4] hover:bg-[#f3f4f6]`}
-                    key={i}
-                    onClick={() => paginate(i + 1)}
-                  >
-                    {i + 1}
-                  </button>
-                )
+              {pageGroup > 1 && <button onClick={previousGroup}>...</button>}
+              {[...Array(totalPageInCurrentGroup)].map((e, i) => (
+                <button
+                  className={`py-3 px-4 ${
+                    currentPage === (pageGroup - 1) * pagesPerGroup + i + 1
+                      ? "text-[#2a61d4] bg-[#f3f4f6]"
+                      : ""
+                  } hover:text-[#2a61d4] hover:bg-[#f3f4f6]`}
+                  key={i}
+                  onClick={() => paginate(i + 1)}
+                >
+                  {(pageGroup - 1) * pagesPerGroup + i + 1}
+                </button>
+              ))}
+              {pageGroup < totalPageGroups && (
+                <button onClick={nextGroup}>...</button>
               )}
             </div>
           </div>

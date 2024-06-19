@@ -13,6 +13,9 @@ import { FaXmark } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+import { FaRegUser } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
+import { FaRegTrashCan } from "react-icons/fa6";
 
 const icons = {
   CiSearch,
@@ -30,6 +33,9 @@ const icons = {
   FcGoogle,
   FaEye,
   FaEyeSlash,
+  FaRegUser,
+  FaRegHeart,
+  FaRegTrashCan,
 };
 
 export default icons;

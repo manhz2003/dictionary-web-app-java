@@ -4,14 +4,37 @@ import logo from "../../assets/images/logo-dictionary.png";
 import icons from "../../ultils/icons";
 import path from "../../ultils/path";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const { FcGoogle, FaEye, FaEyeSlash } = icons;
 
 const Login = () => {
   const [stateTypePassword, setStateTypePassword] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleShowPassword = () => {
     setStateTypePassword(!stateTypePassword);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Vui lòng nhập địa chỉ email.");
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      toast.error("Địa chỉ email không hợp lệ.");
+      return;
+    }
+
+    if (!password.trim()) {
+      toast.error("Vui lòng nhập mật khẩu.");
+      return;
+    }
+
+    console.log("Submit form with:", email, password);
   };
 
   return (
@@ -29,7 +52,7 @@ const Login = () => {
           </div>
         </div>
         <div>
-          <form action="" className="">
+          <form onSubmit={handleSubmit} className="">
             <div>
               <label
                 htmlFor="email"
@@ -43,6 +66,8 @@ const Login = () => {
                 id="email"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                 placeholder="yourname@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -73,6 +98,8 @@ const Login = () => {
                   id="password"
                   className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                   placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <div
                   className=" absolute top-[50%] translate-y-[-30%] right-5 cursor-pointer"
@@ -87,7 +114,10 @@ const Login = () => {
               </div>
             </div>
             <div className="flex items-center justify-center mt-8">
-              <button className="w-full bg-[#d42525] p-4 text-[#fff] rounded-[8px]">
+              <button
+                type="submit"
+                className="w-full bg-[#d42525] p-4 text-[#fff] rounded-[8px]"
+              >
                 Login
               </button>
             </div>

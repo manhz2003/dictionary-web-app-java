@@ -12,7 +12,7 @@ const AdminLayout = () => {
           <div>
             <HeaderAdmin />
           </div>
-          <div className="p-6">
+          <div className="p-4">
             <Outlet />
           </div>
         </div>

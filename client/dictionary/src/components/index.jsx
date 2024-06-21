@@ -9,3 +9,6 @@ export { default as NotFound } from "./NotFound/NotFound";
 export { default as ClientLayout } from "./layout/ClientLayout";
 export { default as AdminLayout } from "./layout/AdminLayout";
 export { default as HeaderAdmin } from "./Header/HeaderAdmin";
+export { default as Table } from "./table/Table";
+export { default as ExploreWord } from "./Pagination/PaginaItem";
+export { default as Pagination } from "./Pagination/Pagination";

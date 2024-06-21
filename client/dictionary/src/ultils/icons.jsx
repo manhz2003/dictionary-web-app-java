@@ -22,6 +22,11 @@ import { FaUser } from "react-icons/fa6";
 import { TiHomeOutline } from "react-icons/ti";
 import { BiCategory } from "react-icons/bi";
 import { SiPhpmyadmin } from "react-icons/si";
+import { IoIosCreate } from "react-icons/io";
+import { CiImport } from "react-icons/ci";
+import { CiExport } from "react-icons/ci";
+import { FiTrash2 } from "react-icons/fi";
+import { LuPencilLine } from "react-icons/lu";
 
 const icons = {
   CiSearch,
@@ -48,6 +53,11 @@ const icons = {
   TiHomeOutline,
   BiCategory,
   SiPhpmyadmin,
+  IoIosCreate,
+  CiImport,
+  CiExport,
+  FiTrash2,
+  LuPencilLine,
 };
 
 export default icons;

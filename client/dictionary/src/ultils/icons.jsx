@@ -16,6 +16,12 @@ import { FaEyeSlash } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegTrashCan } from "react-icons/fa6";
+import { IoMdArrowDropdown } from "react-icons/io";
+import { FaUserAlt } from "react-icons/fa";
+import { FaUser } from "react-icons/fa6";
+import { TiHomeOutline } from "react-icons/ti";
+import { BiCategory } from "react-icons/bi";
+import { SiPhpmyadmin } from "react-icons/si";
 
 const icons = {
   CiSearch,
@@ -36,6 +42,12 @@ const icons = {
   FaRegUser,
   FaRegHeart,
   FaRegTrashCan,
+  IoMdArrowDropdown,
+  FaUserAlt,
+  FaUser,
+  TiHomeOutline,
+  BiCategory,
+  SiPhpmyadmin,
 };
 
 export default icons;

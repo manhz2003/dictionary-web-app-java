@@ -15,13 +15,15 @@ import {
   WordList,
 } from "./pages/Client/index";
 
+import { ClientLayout, NotFound, AdminLayout } from "./components/index";
+
 import { Register, Login, Forgot, Reset } from "./pages/Public";
-import { LayoutClient, LayoutAdmin, NotFound } from "./components/index";
+import { ManageVocabulary, ManageCategory } from "./pages/Admin/index";
 
 const router = createBrowserRouter([
   {
     path: path.HOME,
-    element: <LayoutClient />,
+    element: <ClientLayout />,
     errorElement: <NotFound />,
 
     children: [
@@ -57,14 +59,18 @@ const router = createBrowserRouter([
   },
 
   {
-    path: path.ADMIN,
-    element: <LayoutAdmin />,
+    path: `${path.ADMIN}`,
+    element: <AdminLayout />,
     errorElement: <NotFound />,
 
     children: [
       {
-        path: path.PROFILE,
-        element: <Profile />,
+        path: path.MANAGE_CATEGORY,
+        element: <ManageCategory />,
+      },
+      {
+        path: path.MANAGE_VOCABULARY,
+        element: <ManageVocabulary />,
       },
     ],
   },

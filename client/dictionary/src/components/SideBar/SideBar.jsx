@@ -44,7 +44,7 @@ const SideBar = () => {
               key={menu.id}
               className={`flex items-center gap-3 w-full p-5 text-[18px] cursor-pointer font-normal ${
                 location.pathname === menu.path
-                  ? "text-[#d42525] bg-[#fbfcff]"
+                  ? "text-[#d42525] bg-[#fbfcff] font-semibold"
                   : "text-[#777d74]"
               }`}
             >

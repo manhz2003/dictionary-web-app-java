@@ -43,9 +43,4 @@ const usePagination = ({ total, currentPage, siblingCount = 1, limit }) => {
   return paginationArr;
 };
 
-//[1,2,3,4,5,6]
-//[1,...6,7,8,9]
-//[1,2,3,4,...10]
-//[1,...6,7,,...10]
-
 export default usePagination;

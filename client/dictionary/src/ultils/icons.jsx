@@ -27,6 +27,7 @@ import { CiImport } from "react-icons/ci";
 import { CiExport } from "react-icons/ci";
 import { FiTrash2 } from "react-icons/fi";
 import { LuPencilLine } from "react-icons/lu";
+import { IoCloseOutline } from "react-icons/io5";
 
 const icons = {
   CiSearch,
@@ -58,6 +59,7 @@ const icons = {
   CiExport,
   FiTrash2,
   LuPencilLine,
+  IoCloseOutline,
 };
 
 export default icons;

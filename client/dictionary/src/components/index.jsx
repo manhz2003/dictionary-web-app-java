@@ -12,3 +12,5 @@ export { default as HeaderAdmin } from "./Header/HeaderAdmin";
 export { default as Table } from "./table/Table";
 export { default as ExploreWord } from "./Pagination/PaginaItem";
 export { default as Pagination } from "./Pagination/Pagination";
+export { default as Button } from "./Button/Button";
+export { default as Drawer } from "./Drawer/Drawer";

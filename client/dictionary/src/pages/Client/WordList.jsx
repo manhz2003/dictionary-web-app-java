@@ -1,6 +1,7 @@
 import React from "react";
 import { Banner, BannerBottom } from "../../components/index";
 import icons from "../../ultils/icons";
+import { useNavigate } from "react-router-dom";
 
 const {} = icons;
 
@@ -24,18 +25,20 @@ const WordList = () => {
     Math.ceil(fakeWords.length / wordsPerPage) - (pageGroup - 1) * pagesPerGroup
   );
 
+  const navigate = useNavigate();
+
   const paginate = (pageNumber) => {
     setCurrentPage((pageGroup - 1) * pagesPerGroup + pageNumber);
+    navigate(`?page=${(pageGroup - 1) * pagesPerGroup + pageNumber}`);
   };
-
   const nextGroup = () => {
     setPageGroup(pageGroup + 1);
-    setCurrentPage(pageGroup * pagesPerGroup + 1);
+    setCurrentPage((pageGroup + 1) * pagesPerGroup + 1);
   };
 
   const previousGroup = () => {
     setPageGroup(pageGroup - 1);
-    setCurrentPage((pageGroup - 2) * pagesPerGroup + 1);
+    setCurrentPage((pageGroup - 1) * pagesPerGroup + 1);
   };
 
   return (

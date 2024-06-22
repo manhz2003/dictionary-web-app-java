@@ -6,8 +6,9 @@ import { useSearchParams } from "react-router-dom";
 
 const Table = ({ title, columns, data, groupButton, maxH, limit }) => {
   const [displayData, setDisplayData] = useState([]);
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const limits = limit || 10;
+  const currentPage = +params.get("page") || 1;
 
   const handleSort = (key) => {
     const sortData = [...data].sort((a, b) => {
@@ -15,14 +16,18 @@ const Table = ({ title, columns, data, groupButton, maxH, limit }) => {
       if (a[key] > b[key]) return 1;
       return 0;
     });
-    setDisplayData(sortData.slice(0, limits));
+    setDisplayData(
+      sortData.slice((currentPage - 1) * limits, currentPage * limits)
+    );
   };
 
   useEffect(() => {
     if (data && data.length > 0) {
-      setDisplayData(data.slice(0, limits));
+      setDisplayData(
+        data.slice((currentPage - 1) * limits, currentPage * limits)
+      );
     }
-  }, [params, data, limits]);
+  }, [params, data, limits, currentPage]);
 
   return (
     <div className="relative h-full font-roboto text-[#000000E0] w-full">

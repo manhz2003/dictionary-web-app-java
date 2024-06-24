@@ -14,3 +14,5 @@ export { default as ExploreWord } from "./Pagination/PaginaItem";
 export { default as Pagination } from "./Pagination/Pagination";
 export { default as Button } from "./Button/Button";
 export { default as Drawer } from "./Drawer/Drawer";
+export { default as Modal } from "./Modal/Modal";
+export { default as DragFile } from "./Input/DragFile";

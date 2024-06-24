@@ -24,7 +24,7 @@ const ManageCategory = () => {
     setDescription(record.description);
     setDefaultImage(record.thumnail);
     setShowDes(true);
-    setDrawerTitle("Edit Category");
+    setDrawerTitle("Cập nhật danh mục");
     setIsEditMode(true);
   };
 
@@ -114,61 +114,25 @@ const ManageCategory = () => {
       thumnail: "ảnh",
     },
     {
-      no: 1,
+      no: 3,
       categoryName: "Động vật",
       description: "Đây là mô tả cho danh mục 1",
       thumnail: "ảnh",
     },
     {
-      no: 2,
+      no: 4,
       categoryName: "Cây cối",
       description: "Đây là mô tả cho danh mục 2",
       thumnail: "ảnh",
     },
     {
-      no: 1,
+      no: 5,
       categoryName: "Động vật",
       description: "Đây là mô tả cho danh mục 1",
       thumnail: "ảnh",
     },
     {
-      no: 2,
-      categoryName: "Cây cối",
-      description: "Đây là mô tả cho danh mục 2",
-      thumnail: "ảnh",
-    },
-    {
-      no: 1,
-      categoryName: "Động vật",
-      description: "Đây là mô tả cho danh mục 1",
-      thumnail: "ảnh",
-    },
-    {
-      no: 2,
-      categoryName: "Cây cối",
-      description: "Đây là mô tả cho danh mục 2",
-      thumnail: "ảnh",
-    },
-    {
-      no: 1,
-      categoryName: "Động vật",
-      description: "Đây là mô tả cho danh mục 1",
-      thumnail: "ảnh",
-    },
-    {
-      no: 2,
-      categoryName: "Cây cối",
-      description: "Đây là mô tả cho danh mục 2",
-      thumnail: "ảnh",
-    },
-    {
-      no: 1,
-      categoryName: "Động vật",
-      description: "Đây là mô tả cho danh mục 1",
-      thumnail: "ảnh",
-    },
-    {
-      no: 2,
+      no: 6,
       categoryName: "Cây cối",
       description: "Đây là mô tả cho danh mục 2",
       thumnail: "ảnh",
@@ -228,7 +192,7 @@ const ManageCategory = () => {
 
   return (
     <>
-      <div className="bg-[#fff] border-2 border-gray-100 drop-shadow p-5 rounded-[6px]">
+      <div className="bg-[#fff] border-2 border-gray-100 drop-shadow p-5 rounded-[6px]  h-[100%]">
         <div className="flex justify-between items-center border-b-2 border-gray-100 drop-shadow bg-[#fafafa] rounded-[8px] p-3">
           <div className="font-semibold text-[21px]">Manage category</div>
           <div className="flex items-center gap-3">

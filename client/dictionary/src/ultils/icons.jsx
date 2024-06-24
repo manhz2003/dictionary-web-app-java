@@ -31,6 +31,9 @@ import { IoCloseOutline } from "react-icons/io5";
 import { TbVocabulary } from "react-icons/tb";
 import { FaStackExchange } from "react-icons/fa6";
 import { MdOutlineDescription } from "react-icons/md";
+import { MdAttachFile } from "react-icons/md";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { CiCircleMinus } from "react-icons/ci";
 
 const icons = {
   CiSearch,
@@ -66,6 +69,9 @@ const icons = {
   TbVocabulary,
   FaStackExchange,
   MdOutlineDescription,
+  MdAttachFile,
+  IoIosAddCircleOutline,
+  CiCircleMinus,
 };
 
 export default icons;

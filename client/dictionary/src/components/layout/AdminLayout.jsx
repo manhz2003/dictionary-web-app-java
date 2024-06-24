@@ -9,10 +9,10 @@ const AdminLayout = () => {
           <SideBar />
         </div>
         <div className="w-[76%] ml-[24%] bg-[#fbfcff]">
-          <div>
+          <div className="fixed w-[76%] z-10 bg-[#fbfcff]">
             <HeaderAdmin />
           </div>
-          <div className="p-4">
+          <div className="mt-[78px] p-4">
             <Outlet />
           </div>
         </div>

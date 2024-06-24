@@ -82,7 +82,7 @@ const DashBoard = () => {
     setEmail(record.email);
     setNameRole(record.nameRole);
     setShowDes(true);
-    setDrawerTitle("Edit Category");
+    setDrawerTitle("Cập nhật user");
     setIsEditMode(true);
   };
 
@@ -325,7 +325,7 @@ const DashBoard = () => {
               <div className=" text-[30px] font-bold leading-[22px]">
                 {userCount}
               </div>
-              <div className="font-semibold leading-[22px]">Users</div>
+              <div className="font-semibold leading-[22px]">Người dùng</div>
             </div>
           </div>
 
@@ -337,7 +337,7 @@ const DashBoard = () => {
               <div className=" text-[30px] font-bold leading-[22px]">
                 {vocabCount}
               </div>
-              <div className="font-semibold leading-[22px]">Vocabulary</div>
+              <div className="font-semibold leading-[22px]">Từ vựng</div>
             </div>
           </div>
 
@@ -349,7 +349,7 @@ const DashBoard = () => {
               <div className=" text-[30px] font-bold leading-[22px]">
                 {exampleCount}
               </div>
-              <div className="font-semibold leading-[22px]">Example</div>
+              <div className="font-semibold leading-[22px]">Ví dụ</div>
             </div>
           </div>
 
@@ -361,13 +361,13 @@ const DashBoard = () => {
               <div className=" text-[30px] font-bold leading-[22px]">
                 {descCount}
               </div>
-              <div className="font-semibold leading-[22px]">Description</div>
+              <div className="font-semibold leading-[22px]">Mô tả</div>
             </div>
           </div>
         </div>
       </div>
       <div className="mt-6 flex justify-between items-center border-b-2 border-gray-100 drop-shadow bg-[#fafafa] rounded-[8px] p-3">
-        <div className="font-semibold text-[21px]">Control</div>
+        <div className="font-semibold text-[21px]">Điều khiển</div>
         <div className="flex items-center gap-3">
           <div>
             <Button

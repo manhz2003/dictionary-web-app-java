@@ -10,43 +10,35 @@ const HeaderAdmin = () => {
   };
 
   return (
-    <>
-      <div className="flex items-center w-full h-[80px] justify-between bg-[#fbfcff] border-b border-gray-100 drop-shadow relative z-50">
-        <div className="pl-[45px]">
-          <div className="font-bold text-[22px] leading-[25px]">
-            PHẦN MỀM QUẢN LÝ TỪ ĐIỂN DOL
-          </div>
-          <div className="leading-[25px]">
-            DOL DICTIONARY MANAGEMENT SOFTWARE
-          </div>
+    <div className="flex items-center justify-between bg-[#fbfcff] h-[80px] px-[45px] border-b border-gray-100 shadow-md relative z-50">
+      <div>
+        <div className="font-bold text-[22px] leading-[25px]">
+          PHẦN MỀM QUẢN LÝ TỪ ĐIỂN DOL
         </div>
-        <div className=" relative">
-          <div
-            className="flex gap-3 pr-[45px] items-center cursor-pointer"
-            onClick={toggleLogout}
-          >
-            <div className="bg-[#d1d5da] rounded-[100%] p-2">
-              <FaUser size="24px" color="#fff" />
-            </div>
-            <div className="flex gap-2 items-center">
-              <div className="text-[#242938] select-none">Mạnh</div>
-              <div>
-                <IoMdArrowDropdown size="22px" color="#242938" />
-              </div>
-            </div>
-          </div>
-          {isLogoutVisible && (
-            <div className="absolute bottom-[-60px] left-[-70px] z-[1000] bg-[#fff] border border-gray-100 rounded-[8px] w-[165px] py-2">
-              <div className="py-3 px-5 w-full hover:bg-[#f3f4f6] text-[14px] cursor-pointer">
-                <Link to="/login" className="">
-                  Đăng xuất
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
+        <div className="leading-[25px]">DOL DICTIONARY MANAGEMENT SOFTWARE</div>
       </div>
-    </>
+      <div className="flex items-center relative">
+        <div
+          className="flex items-center gap-3 cursor-pointer"
+          onClick={toggleLogout}
+        >
+          <div className="bg-[#d1d5da] rounded-[100%] p-2">
+            <FaUser size="24px" color="#fff" />
+          </div>
+          <div className="flex items-center gap-2 text-[#242938] select-none">
+            <div>Mạnh</div>
+            <IoMdArrowDropdown size="22px" color="#242938" />
+          </div>
+        </div>
+        {isLogoutVisible && (
+          <div className="absolute top-[60px] right-0 z-[1000] bg-white border border-gray-100 rounded-[8px] w-[165px] shadow-md">
+            <div className="py-2 px-3 hover:bg-gray-100 cursor-pointer">
+              <Link to="/login">Đăng xuất</Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

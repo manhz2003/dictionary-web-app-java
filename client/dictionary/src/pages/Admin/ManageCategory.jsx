@@ -13,6 +13,7 @@ const ManageCategory = () => {
   const [description, setDescription] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
 
+  // file input
   const inputFileRef = useRef();
 
   const handleDelete = async (record) => {

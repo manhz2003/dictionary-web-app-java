@@ -5,10 +5,10 @@ const AdminLayout = () => {
   return (
     <main>
       <div className="flex">
-        <div className="w-[24%] bg-[#fff] h-screen border-r-2 border-gray-100 drop-shadow">
+        <div className="fixed w-[24%] bg-[#fff] h-screen border-r-2 border-gray-100 drop-shadow">
           <SideBar />
         </div>
-        <div className="w-[86%] bg-[#fbfcff]">
+        <div className="w-[76%] ml-[24%] bg-[#fbfcff]">
           <div>
             <HeaderAdmin />
           </div>

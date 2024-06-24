@@ -230,7 +230,7 @@ const ManageCategory = () => {
     <>
       <div className="bg-[#fff] border-2 border-gray-100 drop-shadow p-5 rounded-[6px]">
         <div className="flex justify-between items-center border-b-2 border-gray-100 drop-shadow bg-[#fafafa] rounded-[8px] p-3">
-          <div className="font-semibold text-[21px]">Category Lists</div>
+          <div className="font-semibold text-[21px]">Manage category</div>
           <div className="flex items-center gap-3">
             <div>
               <Button
@@ -240,7 +240,7 @@ const ManageCategory = () => {
                 icon={<IoIosCreate />}
                 handleOnclick={handleAddNew}
               >
-                Thêm mới
+                Create
               </Button>
             </div>
 

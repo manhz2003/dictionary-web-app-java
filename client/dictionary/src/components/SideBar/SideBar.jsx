@@ -15,13 +15,13 @@ const menuAdmin = [
   {
     id: 2,
     name: "Manage category",
-    path: `/${path.ADMIN}/manage-category`,
+    path: `/${path.ADMIN}/${path.MANAGE_CATEGORY}`,
     icon: BiCategory,
   },
   {
     id: 3,
     name: "Manage vocabylary",
-    path: `/${path.ADMIN}/manage-vocabulary`,
+    path: `/${path.ADMIN}/${path.MANAGE_VOCABULARY}`,
     icon: SiPhpmyadmin,
   },
 ];

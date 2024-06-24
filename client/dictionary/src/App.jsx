@@ -18,7 +18,11 @@ import {
 import { ClientLayout, NotFound, AdminLayout } from "./components/index";
 
 import { Register, Login, Forgot, Reset } from "./pages/Public";
-import { ManageVocabulary, ManageCategory } from "./pages/Admin/index";
+import {
+  ManageVocabulary,
+  ManageCategory,
+  DashBoash,
+} from "./pages/Admin/index";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +68,10 @@ const router = createBrowserRouter([
     errorElement: <NotFound />,
 
     children: [
+      {
+        index: true,
+        element: <DashBoash />,
+      },
       {
         path: path.MANAGE_CATEGORY,
         element: <ManageCategory />,

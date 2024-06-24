@@ -28,6 +28,9 @@ import { CiExport } from "react-icons/ci";
 import { FiTrash2 } from "react-icons/fi";
 import { LuPencilLine } from "react-icons/lu";
 import { IoCloseOutline } from "react-icons/io5";
+import { TbVocabulary } from "react-icons/tb";
+import { FaStackExchange } from "react-icons/fa6";
+import { MdOutlineDescription } from "react-icons/md";
 
 const icons = {
   CiSearch,
@@ -60,6 +63,9 @@ const icons = {
   FiTrash2,
   LuPencilLine,
   IoCloseOutline,
+  TbVocabulary,
+  FaStackExchange,
+  MdOutlineDescription,
 };
 
 export default icons;

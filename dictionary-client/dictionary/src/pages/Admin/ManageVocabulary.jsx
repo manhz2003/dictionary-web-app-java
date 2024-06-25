@@ -52,9 +52,6 @@ const ManageVocabulary = () => {
     setNameCategory(selectedCategory?.nameCategory || "");
   };
 
-  console.log("dataPreview: ", dataPreview);
-  console.log("dataImport: ", dataImport);
-
   const handleAddEnglish = () => {
     setEnglishExample([...englishExample, ""]);
   };

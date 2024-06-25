@@ -65,7 +65,12 @@ const ManageVocabulary = () => {
   };
 
   const handleImportButtonClick = () => {
-    console.log("Importing data...");
+    if (dataImport) {
+      toast.success("Import thành công");
+      setShowModal(false);
+      setFileName(null);
+      setDataPreview([]);
+    }
   };
 
   const handleClearSearch = () => {
@@ -301,6 +306,19 @@ const ManageVocabulary = () => {
           <div className="font-semibold text-[21px]">Manage vocabulary</div>
           <div className="flex items-center gap-3">
             <div>
+              <select
+                required
+                id="role"
+                className="w-full h-[42px] border border-[#e4e6e8] rounded-[8px] px-5 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
+                value={nameCategory}
+                onChange={(e) => setNameCategory(e.target.value)}
+              >
+                <option value="">Danh mục</option>
+                <option value="Động vật">Động vật</option>
+                <option value="Cây cối, hoa quả">Cây cối, hoa quả</option>
+              </select>
+            </div>
+            <div>
               <Button
                 style={
                   "bg-[#d42525] text-[#fff] py-3 text-[16px] flex item-center gap-2"
@@ -319,7 +337,11 @@ const ManageVocabulary = () => {
                 }
                 icon={<CiImport />}
                 handleOnclick={() => {
-                  setShowModal(true);
+                  if (!nameCategory) {
+                    toast.error("Vui lòng chọn danh mục trước khi import");
+                  } else {
+                    setShowModal(true);
+                  }
                 }}
               >
                 Import
@@ -530,7 +552,7 @@ const ManageVocabulary = () => {
         <Modal
           show={showModal}
           setShow={setShowModal}
-          title={"Import dữ liệu sinh viên"}
+          title={"Import từ vựng"}
           disableOkBtn={dataPreview?.length < 1}
           onClickBtnOk={handleImportButtonClick}
           textOk={"Import"}

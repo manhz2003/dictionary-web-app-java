@@ -21,6 +21,7 @@ const ManageVocabulary = () => {
   const [drawerTitle, setDrawerTitle] = useState("");
   const [english, setEnglish] = useState("");
   const [vietnamese, setVietnamese] = useState("");
+  const [wordType, setWordType] = useState("");
   const [phoneticTranscription, setPhoneticTranscription] = useState("");
   const [explain, setExplain] = useState("");
   const [thumnail, setThumnail] = useState("");
@@ -32,12 +33,31 @@ const ManageVocabulary = () => {
   const [dataImport, setDataImport] = useState({});
   const [englishExample, setEnglishExample] = useState([""]);
   const [vietnameseExample, setVietnameseExample] = useState([""]);
+  const [idCategory, setIdCategory] = useState("");
+
+  // render data for select category
+  const categories = [
+    { idCategory: 1, nameCategory: "Động vật" },
+    { idCategory: 2, nameCategory: "Cây cối, hoa quả" },
+    { idCategory: 3, nameCategory: "Đồ vật" },
+    { idCategory: 4, nameCategory: "Địa điểm" },
+  ];
+
+  const handleSelectChange = (e) => {
+    const selectedId = e.target.value;
+    const selectedCategory = categories.find(
+      (category) => category.idCategory === parseInt(selectedId)
+    );
+    setIdCategory(selectedId);
+    setNameCategory(selectedCategory?.nameCategory || "");
+  };
+
+  console.log("dataPreview: ", dataPreview);
+  console.log("dataImport: ", dataImport);
 
   const handleAddEnglish = () => {
     setEnglishExample([...englishExample, ""]);
   };
-
-  console.log("englishExample", englishExample);
 
   const handleAddVietnamese = () => {
     setVietnameseExample([...vietnameseExample, ""]);
@@ -73,9 +93,14 @@ const ManageVocabulary = () => {
     setVietnamese(record.vietnamese);
     setPhoneticTranscription(record.phoneticTranscription);
     setExplain(record.explain);
+    setWordType(record.wordType);
     setThumnail(record.thumnail);
-    setEnglishExample([...record.englishExample]);
-    setVietnameseExample([...record.vietnameseExample]);
+    setEnglishExample(
+      Array.isArray(record.englishExample) ? record.englishExample : []
+    );
+    setVietnameseExample(
+      Array.isArray(record.vietnameseExample) ? record.vietnameseExample : []
+    );
     setShowDes(true);
     setDrawerTitle("Cập nhật từ điển");
     setIsEditMode(true);
@@ -90,60 +115,41 @@ const ManageVocabulary = () => {
     }
   };
 
-  const handlePreviewData = useCallback();
-  (fileValue) => {
-    readFileDataImport(fileValue)
-      .then((dataMain) => {
-        let dataFormat = Array.isArray(dataMain.dataMain)
-          ? dataMain.dataMain.map((data) => {
-              return {
-                TenKhoa: data["Khoa"],
-                TenLop: data["Lớp"],
-                Msv: String(data["msv"]),
-                HoTen: data["Họ và tên"],
-                GioiTinh: data["Giới tính"],
-                DanToc: data["Dân tộc"],
-                QueQuan: data["Quê quán"],
-                NTT: data["Nơi thường trú"],
-                Email: data["Email"],
-                SDT: data["sdt sv"],
-                NguoiThan: [
-                  {
-                    TenNT: data["Người giám hộ 1"],
-                    QuanHe: data["Vai trò gh 1"],
-                    SDT: data["sdt gh 1"],
-                  },
-                  {
-                    TenNT: data["Người giám hộ 2"],
-                    QuanHe: data["Vai trò gh 2"],
-                    SDT: data["sdt gh 2"],
-                  },
-                ],
-              };
-            })
-          : [];
+  const handlePreviewData = useCallback(
+    (fileValue) => {
+      readFileDataImport(fileValue)
+        .then((dataMain) => {
+          const dataFormat = Array.isArray(dataMain.dataMain)
+            ? dataMain.dataMain.map((data) => {
+                return {
+                  no: data["STT"],
+                  vietnamese: data["Tiếng việt"],
+                  phoneticTranscription: String(data["Phiên âm"]),
+                  english: data["Tiếng Anh"],
+                  wordType: data["Loại từ"],
+                  englishExample: [data["Đặt câu"]],
+                  vietnameseExample: [data["Dịch nghĩa câu"]],
+                  explain: data["Giải nghĩa từ"],
+                  thumnail: data["link ảnh"],
+                  category: nameCategory,
+                };
+              })
+            : [];
 
-        const processedData = dataFormat.map((item) => {
-          const { NguoiThan, ...otherProps } = item;
-          const flattenedItem = { ...otherProps };
+          const dataImport = dataFormat.map(({ no, ...rest }) => ({
+            ...rest,
+            category: idCategory,
+          }));
 
-          NguoiThan.forEach((nt, index) => {
-            flattenedItem[`NguoiThan${index + 1}.TenNT`] = nt.TenNT;
-            flattenedItem[`NguoiThan${index + 1}.QuanHe`] = nt.QuanHe;
-            flattenedItem[`NguoiThan${index + 1}.SDT`] = nt.SDT;
-          });
-
-          return flattenedItem;
+          setDataPreview(dataFormat);
+          setDataImport(dataImport);
+        })
+        .catch((error) => {
+          toast.error("File không đúng định dạng !");
         });
-
-        setDataImport(dataFormat);
-        setDataPreview(processedData);
-      })
-      .catch((error) => {
-        toast.error("File không đúng định dạng !");
-      });
-  },
-    [dataPreview];
+    },
+    [idCategory, nameCategory]
+  );
 
   const handleClearSearch = () => {
     setClearSearch("");
@@ -160,6 +166,7 @@ const ManageVocabulary = () => {
       vietnamese,
       phoneticTranscription,
       explain,
+      wordType,
       thumnail,
       category: nameCategory,
       englishExample: [...englishExample],
@@ -183,6 +190,7 @@ const ManageVocabulary = () => {
     setVietnamese("");
     setPhoneticTranscription("");
     setExplain("");
+    setWordType("");
     setThumnail("");
     englishExample([]);
     vietnameseExample([]);
@@ -199,6 +207,7 @@ const ManageVocabulary = () => {
     setVietnamese("");
     setPhoneticTranscription("");
     setExplain("");
+    setWordType("");
     setThumnail("");
     englishExample([]);
     vietnameseExample([]);
@@ -231,8 +240,8 @@ const ManageVocabulary = () => {
       sort: true,
     },
     {
-      title: "Ảnh mô tả",
-      key: "thumnail",
+      title: "Loại từ",
+      key: "wordType",
       sort: true,
     },
     {
@@ -246,7 +255,8 @@ const ManageVocabulary = () => {
       render: (text, record) => {
         return (
           <div>
-            {record.englishExample && record.englishExample.length > 0 ? (
+            {Array.isArray(record.englishExample) &&
+            record.englishExample.length > 0 ? (
               record.englishExample.map((item, index) => (
                 <p key={index}>{`${index + 1}. ${item}`}</p>
               ))
@@ -263,7 +273,8 @@ const ManageVocabulary = () => {
       render: (text, record) => {
         return (
           <div>
-            {record.vietnameseExample && record.vietnameseExample.length > 0 ? (
+            {Array.isArray(record.vietnameseExample) &&
+            record.vietnameseExample.length > 0 ? (
               record.vietnameseExample.map((item, index) => (
                 <p key={index}>{`${index + 1}. ${item}`}</p>
               ))
@@ -273,6 +284,11 @@ const ManageVocabulary = () => {
           </div>
         );
       },
+    },
+    {
+      title: "Ảnh mô tả",
+      key: "thumnail",
+      sort: true,
     },
 
     {
@@ -304,6 +320,7 @@ const ManageVocabulary = () => {
       vietnamese: "Quả chuối",
       phoneticTranscription: "bəˈnæn.ə",
       explain: "Quả chuối là loại quả có vỏ màu vàng",
+      wordType: "Danh từ",
       category: "Cây cối, hoa quả",
       thumnail: "ảnh",
       englishExample: ["I like banana", "Banana is yellow", "Banana is sweet"],
@@ -319,6 +336,7 @@ const ManageVocabulary = () => {
       vietnamese: "Quả táo",
       phoneticTranscription: "ˈæp.əl",
       explain: "Quả táo có màu đỏ hoặc xanh lá cây",
+      wordType: "Danh từ",
       category: "Cây cối, hoa quả",
       thumnail: "ảnh",
       englishExample: ["I eat apple"],
@@ -330,6 +348,7 @@ const ManageVocabulary = () => {
       vietnamese: "Quả cam",
       phoneticTranscription: "ˈɔːrɪndʒ",
       explain: "Quả cam có màu da cam",
+      wordType: "Danh từ",
       category: "Cây cối, hoa quả",
       thumnail: "ảnh",
       englishExample: ["Orange juice is delicious"],
@@ -341,6 +360,7 @@ const ManageVocabulary = () => {
       vietnamese: "Xe ô tô",
       phoneticTranscription: "kɑːr",
       explain: "Xe ô tô là phương tiện giao thông cá nhân",
+      wordType: "Danh từ",
       category: "Phương tiện",
       thumnail: "ảnh",
       englishExample: ["Orange juice is delicious"],
@@ -410,12 +430,15 @@ const ManageVocabulary = () => {
                 required
                 id="role"
                 className="w-full h-[42px] border border-[#e4e6e8] rounded-[8px] px-5 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
-                value={nameCategory}
-                onChange={(e) => setNameCategory(e.target.value)}
+                value={idCategory}
+                onChange={handleSelectChange}
               >
                 <option value="">Danh mục</option>
-                <option value="Động vật">Động vật</option>
-                <option value="Cây cối, hoa quả">Cây cối, hoa quả</option>
+                {categories.map((category) => (
+                  <option key={category.idCategory} value={category.idCategory}>
+                    {category.nameCategory}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -479,7 +502,7 @@ const ManageVocabulary = () => {
             <div className="flex flex-col gap-3">
               <div>
                 <label
-                  htmlFor="role"
+                  htmlFor="category"
                   className="block text-[15px] text-[#242938] leading-[20px] font-normal "
                 >
                   Chọn danh mục
@@ -536,7 +559,7 @@ const ManageVocabulary = () => {
                   htmlFor=""
                   className="block text-[15px] text-[#242938] leading-[20px] font-normal "
                 >
-                  Phonetic Transcription
+                  Phiên âm
                 </label>
                 <input
                   required
@@ -553,7 +576,7 @@ const ManageVocabulary = () => {
                   htmlFor=""
                   className="block text-[15px] text-[#242938] leading-[20px] font-normal "
                 >
-                  Explain
+                  Giải nghĩa
                 </label>
                 <input
                   required
@@ -563,6 +586,23 @@ const ManageVocabulary = () => {
                   placeholder="Quả chuối là loại quả có vỏ màu vàng"
                   value={explain}
                   onChange={(e) => setExplain(e.target.value)}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor=""
+                  className="block text-[15px] text-[#242938] leading-[20px] font-normal "
+                >
+                  Loại từ
+                </label>
+                <input
+                  required
+                  type="text"
+                  id="text"
+                  className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
+                  placeholder="Danh từ"
+                  value={wordType}
+                  onChange={(e) => setWordType(e.target.value)}
                 />
               </div>
               <div>

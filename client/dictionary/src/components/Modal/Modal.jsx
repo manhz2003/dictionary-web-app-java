@@ -13,8 +13,8 @@ const Modal = ({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-60">
-      <div className="bg-white p-5 rounded-lg max-w-lg w-full mx-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-60 h-screen">
+      <div className="bg-white p-5 rounded-lg max-w-full max-h-full w-[90%] h-[90%] mx-4 overflow-y-auto">
         <div className="flex justify-between items-center border-b pb-3">
           <h2 className="text-xl font-semibold">{title}</h2>
           <button className="text-2xl font-bold" onClick={() => setShow(false)}>

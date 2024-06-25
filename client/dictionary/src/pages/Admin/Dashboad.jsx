@@ -316,8 +316,8 @@ const DashBoard = () => {
     <div className="bg-[#fff] border-2 border-gray-100 drop-shadow p-5 rounded-[6px]">
       <div className="flex flex-col  border-b-2 border-gray-100 drop-shadow bg-[#fafafa] rounded-[8px] p-3">
         <div className="font-semibold text-[21px]">Dasdboad</div>
-        <div className="flex items-center justify-center gap-5 my-4">
-          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[235px] flex justify-center items-center gap-5">
+        <div className="flex items-center justify-center gap-8 my-4">
+          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[238px] flex justify-center items-center gap-5">
             <div className="bg-[#08d6b8] p-5 rounded-[100%] ">
               <FaUser size="22px" color="#fff" />
             </div>
@@ -329,7 +329,7 @@ const DashBoard = () => {
             </div>
           </div>
 
-          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[235px] flex justify-center items-center gap-5">
+          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[238px] flex justify-center items-center gap-5">
             <div className="bg-[#ff9b89] p-5 rounded-[100%]">
               <TbVocabulary size="22px" color="#fff" />
             </div>
@@ -341,7 +341,7 @@ const DashBoard = () => {
             </div>
           </div>
 
-          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[235px] flex justify-center items-center gap-5">
+          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[238px] flex justify-center items-center gap-5">
             <div className="bg-[#ffba67] p-5 rounded-[100%]">
               <FaStackExchange size="22px" color="#fff" />
             </div>
@@ -353,7 +353,7 @@ const DashBoard = () => {
             </div>
           </div>
 
-          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[235px] flex justify-center items-center gap-5">
+          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[238px] flex justify-center items-center gap-5">
             <div className="bg-[#d592fe] p-5 rounded-[100%]">
               <MdOutlineDescription size="22px" color="#fff" />
             </div>

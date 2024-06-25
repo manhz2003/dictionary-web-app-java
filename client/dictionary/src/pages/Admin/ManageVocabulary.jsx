@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Table, Drawer, Button, Modal, DragFile } from "../../components/index";
 import icons from "../../ultils/icons";
 import { toast } from "react-toastify";
+import { readFileDataImport } from "../../ultils/helper";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 const {
   IoIosCreate,
   CiExport,
@@ -22,28 +25,42 @@ const ManageVocabulary = () => {
   const [explain, setExplain] = useState("");
   const [thumnail, setThumnail] = useState("");
   const [nameCategory, setNameCategory] = useState("");
-
   const [isEditMode, setIsEditMode] = useState(false);
-
   const [showModal, setShowModal] = useState(false);
   const [fileName, setFileName] = useState(null);
   const [dataPreview, setDataPreview] = useState([]);
   const [dataImport, setDataImport] = useState({});
+  const [englishExample, setEnglishExample] = useState([""]);
+  const [vietnameseExample, setVietnameseExample] = useState([""]);
 
-  const [items, setItems] = useState([""]);
-
-  const handleAdd = () => {
-    setItems([...items, ""]);
+  const handleAddEnglish = () => {
+    setEnglishExample([...englishExample, ""]);
   };
 
-  const handleRemove = (index) => {
-    setItems(items.filter((_, i) => i !== index));
+  console.log("englishExample", englishExample);
+
+  const handleAddVietnamese = () => {
+    setVietnameseExample([...vietnameseExample, ""]);
   };
 
-  const handleChange = (e, index) => {
-    const newItems = [...items];
+  const handleRemoveEnglish = (index) => {
+    setEnglishExample(englishExample.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveVietNamese = (index) => {
+    setVietnameseExample(vietnameseExample.filter((_, i) => i !== index));
+  };
+
+  const handleChangeEnglish = (e, index) => {
+    const newItems = [...englishExample];
     newItems[index] = e.target.value;
-    setItems(newItems);
+    setEnglishExample(newItems);
+  };
+
+  const handleChangeVietnamese = (e, index) => {
+    const newItemsV = [...vietnameseExample];
+    newItemsV[index] = e.target.value;
+    setVietnameseExample(newItemsV);
   };
 
   const handleDelete = async (record) => {
@@ -57,8 +74,8 @@ const ManageVocabulary = () => {
     setPhoneticTranscription(record.phoneticTranscription);
     setExplain(record.explain);
     setThumnail(record.thumnail);
-    setItems([...record.examples]);
-
+    setEnglishExample([...record.englishExample]);
+    setVietnameseExample([...record.vietnameseExample]);
     setShowDes(true);
     setDrawerTitle("Cập nhật từ điển");
     setIsEditMode(true);
@@ -72,6 +89,61 @@ const ManageVocabulary = () => {
       setDataPreview([]);
     }
   };
+
+  const handlePreviewData = useCallback();
+  (fileValue) => {
+    readFileDataImport(fileValue)
+      .then((dataMain) => {
+        let dataFormat = Array.isArray(dataMain.dataMain)
+          ? dataMain.dataMain.map((data) => {
+              return {
+                TenKhoa: data["Khoa"],
+                TenLop: data["Lớp"],
+                Msv: String(data["msv"]),
+                HoTen: data["Họ và tên"],
+                GioiTinh: data["Giới tính"],
+                DanToc: data["Dân tộc"],
+                QueQuan: data["Quê quán"],
+                NTT: data["Nơi thường trú"],
+                Email: data["Email"],
+                SDT: data["sdt sv"],
+                NguoiThan: [
+                  {
+                    TenNT: data["Người giám hộ 1"],
+                    QuanHe: data["Vai trò gh 1"],
+                    SDT: data["sdt gh 1"],
+                  },
+                  {
+                    TenNT: data["Người giám hộ 2"],
+                    QuanHe: data["Vai trò gh 2"],
+                    SDT: data["sdt gh 2"],
+                  },
+                ],
+              };
+            })
+          : [];
+
+        const processedData = dataFormat.map((item) => {
+          const { NguoiThan, ...otherProps } = item;
+          const flattenedItem = { ...otherProps };
+
+          NguoiThan.forEach((nt, index) => {
+            flattenedItem[`NguoiThan${index + 1}.TenNT`] = nt.TenNT;
+            flattenedItem[`NguoiThan${index + 1}.QuanHe`] = nt.QuanHe;
+            flattenedItem[`NguoiThan${index + 1}.SDT`] = nt.SDT;
+          });
+
+          return flattenedItem;
+        });
+
+        setDataImport(dataFormat);
+        setDataPreview(processedData);
+      })
+      .catch((error) => {
+        toast.error("File không đúng định dạng !");
+      });
+  },
+    [dataPreview];
 
   const handleClearSearch = () => {
     setClearSearch("");
@@ -90,7 +162,8 @@ const ManageVocabulary = () => {
       explain,
       thumnail,
       category: nameCategory,
-      items: [...items],
+      englishExample: [...englishExample],
+      vietnameseExample: [...vietnameseExample],
     };
 
     if (isEditMode) {
@@ -111,7 +184,8 @@ const ManageVocabulary = () => {
     setPhoneticTranscription("");
     setExplain("");
     setThumnail("");
-    setItems([]);
+    englishExample([]);
+    vietnameseExample([]);
     setShowDes(false);
     setIsEditMode(false);
   };
@@ -126,7 +200,8 @@ const ManageVocabulary = () => {
     setPhoneticTranscription("");
     setExplain("");
     setThumnail("");
-    setItems([]);
+    englishExample([]);
+    vietnameseExample([]);
   };
 
   const column = [
@@ -166,13 +241,30 @@ const ManageVocabulary = () => {
       sort: true,
     },
     {
-      title: "Ví dụ",
-      key: "examples",
+      title: "Ví dụ tiếng anh",
+      key: "englishExample",
       render: (text, record) => {
         return (
           <div>
-            {record.examples && record.examples.length > 0 ? (
-              record.examples.map((item, index) => (
+            {record.englishExample && record.englishExample.length > 0 ? (
+              record.englishExample.map((item, index) => (
+                <p key={index}>{`${index + 1}. ${item}`}</p>
+              ))
+            ) : (
+              <p>Không có ví dụ</p>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      title: "Ví dụ tiếng việt",
+      key: "vietnameseExample",
+      render: (text, record) => {
+        return (
+          <div>
+            {record.vietnameseExample && record.vietnameseExample.length > 0 ? (
+              record.vietnameseExample.map((item, index) => (
                 <p key={index}>{`${index + 1}. ${item}`}</p>
               ))
             ) : (
@@ -214,7 +306,12 @@ const ManageVocabulary = () => {
       explain: "Quả chuối là loại quả có vỏ màu vàng",
       category: "Cây cối, hoa quả",
       thumnail: "ảnh",
-      examples: ["I like banana", "Banana is yellow", "Banana is sweet"],
+      englishExample: ["I like banana", "Banana is yellow", "Banana is sweet"],
+      vietnameseExample: [
+        "Tôi thích quả chuối",
+        "Quả chuối màu vàng",
+        "Quả chuối ngọt",
+      ],
     },
     {
       no: 2,
@@ -224,7 +321,8 @@ const ManageVocabulary = () => {
       explain: "Quả táo có màu đỏ hoặc xanh lá cây",
       category: "Cây cối, hoa quả",
       thumnail: "ảnh",
-      examples: ["I eat apple"],
+      englishExample: ["I eat apple"],
+      vietnameseExample: ["Tôi ăn táo"],
     },
     {
       no: 3,
@@ -234,7 +332,8 @@ const ManageVocabulary = () => {
       explain: "Quả cam có màu da cam",
       category: "Cây cối, hoa quả",
       thumnail: "ảnh",
-      examples: ["Orange juice is delicious"],
+      englishExample: ["Orange juice is delicious"],
+      vietnameseExample: ["Nước cam rất ngon"],
     },
     {
       no: 4,
@@ -244,7 +343,8 @@ const ManageVocabulary = () => {
       explain: "Xe ô tô là phương tiện giao thông cá nhân",
       category: "Phương tiện",
       thumnail: "ảnh",
-      examples: ["Orange juice is delicious"],
+      englishExample: ["Orange juice is delicious"],
+      vietnameseExample: ["Nước cam rất ngon"],
     },
   ]);
 
@@ -485,14 +585,14 @@ const ManageVocabulary = () => {
               <div>
                 <div
                   className="cursor-pointer flex gap-2 items-center mt-3"
-                  onClick={handleAdd}
+                  onClick={handleAddEnglish}
                 >
-                  <div>Thêm ví dụ</div>
+                  <div>Thêm ví dụ tiếng anh</div>
                   <div className="mt-[2.5px]">
                     <IoIosAddCircleOutline />
                   </div>
                 </div>
-                {items.map((item, index) => (
+                {englishExample.map((item, index) => (
                   <div key={index} className="flex items-center gap-2 mt-5">
                     <div className="flex items-center gap-3 w-[10%]">
                       <div className="text-[15px] text-[#242938] leading-[20px] font-normal ">
@@ -500,7 +600,7 @@ const ManageVocabulary = () => {
                       </div>
                       <div
                         className="cursor-pointer"
-                        onClick={() => handleRemove(index)}
+                        onClick={() => handleRemoveEnglish(index)}
                       >
                         <div>
                           <CiCircleMinus />
@@ -513,7 +613,44 @@ const ManageVocabulary = () => {
                       className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
                       placeholder="I like banana"
                       value={item}
-                      onChange={(e) => handleChange(e, index)}
+                      onChange={(e) => handleChangeEnglish(e, index)}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <div
+                  className="cursor-pointer flex gap-2 items-center mt-3"
+                  onClick={handleAddVietnamese}
+                >
+                  <div>Thêm ví dụ tiếng việt</div>
+                  <div className="mt-[2.5px]">
+                    <IoIosAddCircleOutline />
+                  </div>
+                </div>
+                {vietnameseExample.map((item, index) => (
+                  <div key={index} className="flex items-center gap-2 mt-5">
+                    <div className="flex items-center gap-3 w-[10%]">
+                      <div className="text-[15px] text-[#242938] leading-[20px] font-normal ">
+                        Ví dụ {index + 1}
+                      </div>
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => handleRemoveVietNamese(index)}
+                      >
+                        <div>
+                          <CiCircleMinus />
+                        </div>
+                      </div>
+                    </div>
+                    <input
+                      required
+                      type="text"
+                      className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
+                      placeholder="Tôi thích quả chuối"
+                      value={item}
+                      onChange={(e) => handleChangeVietnamese(e, index)}
                     />
                   </div>
                 ))}
@@ -564,8 +701,8 @@ const ManageVocabulary = () => {
         >
           <DragFile
             data={dataPreview}
-            // columns={columnsPreview}
-            // onChange={handlePreviewData}
+            columns={column}
+            onChange={handlePreviewData}
             fileName={fileName}
             setFileName={setFileName}
           />

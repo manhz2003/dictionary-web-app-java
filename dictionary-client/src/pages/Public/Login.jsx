@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo-dictionary.png";
 import icons from "../../ultils/icons";
 import path from "../../ultils/path";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { apiLogin } from "../../apis/index";
 
 const { FcGoogle, FaEye, FaEyeSlash } = icons;
 
@@ -12,6 +13,7 @@ const Login = () => {
   const [stateTypePassword, setStateTypePassword] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleShowPassword = () => {
     setStateTypePassword(!stateTypePassword);
@@ -34,7 +36,24 @@ const Login = () => {
       return;
     }
 
-    console.log("Submit form with:", email, password);
+    // Gọi API login
+    apiLogin({ email, password })
+      .then((response) => {
+        console.log("Login success:", response);
+
+        // Xử lý chuyển hướng dựa trên role của user
+        if (response.data.role === "admin") {
+          // navigate("/admin"); // Chuyển hướng đến '/admin'
+        } else {
+          // navigate("/profile"); // Ví dụ chuyển hướng đến '/profile'
+        }
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        toast.error(
+          "Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin đăng nhập."
+        );
+      });
   };
 
   return (

@@ -3,26 +3,27 @@ package com.example.dictionaryapplication.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "`user_roles`")
+@Table(name = "user_roles")
 public class UserRoles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "`user_id`", referencedColumnName = "`id`")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "`role_id`", referencedColumnName = "`id`")
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
     // Constructors
-    // Getters and setters
-    // ...
-
-    // Constructors
     public UserRoles() {
+    }
+
+    public UserRoles(User user, Role role) {
+        this.user = user;
+        this.role = role;
     }
 
     // Getters and Setters

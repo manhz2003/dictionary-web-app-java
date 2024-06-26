@@ -1,18 +1,15 @@
-import axios from "axios";
-import queryString from "query-string";
+import axios from "../axios";
 
-const baseURL = "http://localhost:8081/api"; 
-
-const axiosInstance = axios.create({
-  baseURL,
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-  },
-});
-
-export const apiLogin = (data) => {
-  const formData = queryString.stringify(data);
-  return axiosInstance.post("/users/login", formData);
-};
-
-export default axiosInstance;
+export const apiLogin = (data) =>
+  axios({
+    url: "/users/login",
+    method: "post",
+    data,
+  });
+  
+export const apiRegister = (data) =>
+  axios({
+    url: "/register/user",
+    method: "post",
+    data,
+  });

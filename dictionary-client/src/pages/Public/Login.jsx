@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo-dictionary.png";
 import icons from "../../ultils/icons";
@@ -6,6 +6,7 @@ import path from "../../ultils/path";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { apiLogin } from "../../apis/index";
+import { useAuth } from "../../context/authContext";
 
 const { FcGoogle, FaEye, FaEyeSlash } = icons;
 
@@ -14,6 +15,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleShowPassword = () => {
     setStateTypePassword(!stateTypePassword);
@@ -41,12 +43,13 @@ const Login = () => {
       .then((response) => {
         console.log("Login success:", response);
 
-        // Xử lý chuyển hướng dựa trên role của user
-        if (response.data.role === "admin") {
-          // navigate("/admin"); // Chuyển hướng đến '/admin'
+        const roles = response.data.roles.map((role) => role.nameRole);
+        if (roles.includes("Admin")) {
+          navigate("/admin");
         } else {
-          // navigate("/profile"); // Ví dụ chuyển hướng đến '/profile'
+          navigate("/");
         }
+        login(response.data);
       })
       .catch((error) => {
         console.error("Login error:", error);

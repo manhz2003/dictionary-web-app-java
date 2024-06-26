@@ -1,9 +1,12 @@
+import React from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import path from "./ultils/path";
+import { AuthProvider } from "./context/authContext";
+import AdminRoute from "./hocs/ withAdminAuth";
 
 import {
   Profile,
@@ -64,7 +67,7 @@ const router = createBrowserRouter([
 
   {
     path: `${path.ADMIN}`,
-    element: <AdminLayout />,
+    element: <AdminRoute element={<AdminLayout />} />,
     errorElement: <NotFound />,
 
     children: [
@@ -91,7 +94,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <div className="min-h-screen">
         <RouterProvider router={router} />
       </div>
@@ -107,7 +110,7 @@ function App() {
         pauseOnHover
         theme="light"
       />
-    </>
+    </AuthProvider>
   );
 }
 

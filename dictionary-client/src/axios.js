@@ -1,29 +1,28 @@
-import axios from "axios";
+import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: 'http://localhost:8081/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
 });
 
-// Add a request interceptor
 instance.interceptors.request.use(
-  function (config) {
-    const token = window.localStorage.getItem("jwtToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+  (config) => {
     return config;
   },
-  function (error) {
+  (error) => {
     return Promise.reject(error);
   }
 );
 
 instance.interceptors.response.use(
-  function (response) {
-    return response.data;
+  (response) => {
+    return response;
   },
-  function (error) {
-    return error.response.data;
+  (error) => {
+    return Promise.reject(error);
   }
 );
 

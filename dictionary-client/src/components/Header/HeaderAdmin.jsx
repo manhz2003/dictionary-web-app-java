@@ -1,12 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import icons from "../../ultils/icons";
 const { IoMdArrowDropdown, FaUser } = icons;
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/authContext";
 
 const HeaderAdmin = () => {
   const [isLogoutVisible, setLogoutVisible] = useState(false);
+  const { logout, user } = useAuth();
+
+  const logoutRef = useRef();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (logoutRef.current && !logoutRef.current.contains(event.target)) {
+        setLogoutVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const toggleLogout = () => {
     setLogoutVisible(!isLogoutVisible);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setLogoutVisible(false);
   };
 
   return (
@@ -26,14 +49,22 @@ const HeaderAdmin = () => {
             <FaUser size="24px" color="#fff" />
           </div>
           <div className="flex items-center gap-2 text-[#242938] select-none">
-            <div>Mạnh</div>
+            <div>{user && user.fullname}</div>
             <IoMdArrowDropdown size="22px" color="#242938" />
           </div>
         </div>
         {isLogoutVisible && (
-          <div className="absolute top-[60px] right-0 z-[1000] bg-white border border-gray-100 rounded-[8px] w-[165px] shadow-md">
-            <div className="py-2 px-3 hover:bg-gray-100 cursor-pointer">
-              <Link to="/login">Đăng xuất</Link>
+          <div
+            ref={logoutRef}
+            className="absolute top-[50px] right-0 z-[1000] bg-white border border-gray-100 rounded-[8px] w-[165px] shadow-md"
+          >
+            <div
+              className="py-2 px-3 hover:bg-gray-100 cursor-pointer my-2"
+              onClick={handleLogout}
+            >
+              <Link to="/login" onClick={() => setLogoutVisible(false)}>
+                Đăng xuất
+              </Link>
             </div>
           </div>
         )}

@@ -11,10 +11,16 @@ const Header = () => {
   const [isLogoutVisible, setLogoutVisible] = useState(false);
 
   const logoutRef = useRef();
+  const toggleRef = useRef();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (logoutRef.current && !logoutRef.current.contains(event.target)) {
+      if (
+        logoutRef.current &&
+        !logoutRef.current.contains(event.target) &&
+        toggleRef.current &&
+        !toggleRef.current.contains(event.target)
+      ) {
         setLogoutVisible(false);
       }
     };
@@ -116,6 +122,7 @@ const Header = () => {
             <div
               className="flex items-center gap-3 cursor-pointer"
               onClick={toggleLogout}
+              ref={toggleRef}
             >
               <div className="bg-[#d1d5da] rounded-[100%] p-2">
                 <FaUser size="24px" color="#fff" />
@@ -136,7 +143,17 @@ const Header = () => {
                     onClick={() => setLogoutVisible(false)}
                     className="block"
                   >
-                    Profile
+                    Trang cá nhân
+                  </Link>
+                </div>
+
+                <div className="py-2 px-3 hover:bg-gray-100 cursor-pointer my-1">
+                  <Link
+                    to={path.RESET}
+                    onClick={() => setLogoutVisible(false)}
+                    className="block"
+                  >
+                    Đổi mật khẩu
                   </Link>
                 </div>
 

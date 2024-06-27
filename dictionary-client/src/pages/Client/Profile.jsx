@@ -4,25 +4,71 @@ const { FaRegUser, FaRegHeart, FaRegTrashCan } = icons;
 import defaultAvatar from "../../assets/images/avatar-default.jpeg";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { apiGetProfile, apiUpdateProfile } from "../../apis";
+import { useAuth } from "../../context/authContext";
 
 const Profile = () => {
+  const navigate = useNavigate();
+
   const [selectedTab, setSelectedTab] = useState("Personal info");
   const [avatar, setAvatar] = useState(defaultAvatar);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [fullname, setFullname] = useState("");
+
+  const { user } = useAuth();
+
+  // api hiển thị data profile
+  useEffect(() => {
+    if (user) {
+      apiGetProfile(user.id)
+        .then((response) => {
+          setName(response.data.fullname);
+          setFullname(response.data.fullname);
+          setEmail(response.data.email);
+          setPhoneNumber(response.data.phoneNumber);
+          setAddress(response.data.address);
+          setAvatar(response.data.avatar);
+        })
+        .catch((error) => {
+          console.error("Get profile error:", error);
+        });
+    }
+  }, [user]);
 
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
-      setAvatar(URL.createObjectURL(e.target.files[0]));
+      setAvatar(e.target.files[0]);
     }
+  };
+
+  const updateProfile = () => {
+    const formData = new FormData();
+    formData.append("userId", user.id);
+    formData.append("fullname", fullname);
+    formData.append("email", email);
+    formData.append("phoneNumber", phoneNumber);
+    formData.append("address", address);
+    if (avatar !== defaultAvatar) {
+      formData.append("avatar", avatar);
+    }
+
+    apiUpdateProfile(formData)
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success("Cập nhật thông tin thành công.");
+        }
+      })
+      .catch((error) => {
+        toast.error("Cập nhật thông tin thất bại.");
+      });
   };
 
   const handleDeleteAvatar = () => {
     setAvatar(defaultAvatar);
   };
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
 
   const validateEmail = (email) => {
     var re =
@@ -55,16 +101,16 @@ const Profile = () => {
       toast.error("Địa chỉ là bắt buộc.");
       return;
     }
+
+    updateProfile();
   };
 
   const fakeWords = Array(403).fill("Nhà môi trường học");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [wordsPerPage] = React.useState(20);
-
   const indexOfLastWord = currentPage * wordsPerPage;
   const indexOfFirstWord = indexOfLastWord - wordsPerPage;
   const currentWords = fakeWords.slice(indexOfFirstWord, indexOfLastWord);
-
   const [pageGroup, setPageGroup] = React.useState(1);
   const pagesPerGroup = 6;
 
@@ -75,8 +121,6 @@ const Profile = () => {
     pagesPerGroup,
     Math.ceil(fakeWords.length / wordsPerPage) - (pageGroup - 1) * pagesPerGroup
   );
-  const navigate = useNavigate();
-
   const paginate = (pageNumber) => {
     setCurrentPage((pageGroup - 1) * pagesPerGroup + pageNumber);
     navigate(`?page=${(pageGroup - 1) * pagesPerGroup + pageNumber}`);
@@ -85,7 +129,6 @@ const Profile = () => {
     setPageGroup(pageGroup + 1);
     setCurrentPage((pageGroup + 1) * pagesPerGroup + 1);
   };
-
   const previousGroup = () => {
     setPageGroup(pageGroup - 1);
     setCurrentPage((pageGroup - 1) * pagesPerGroup + 1);
@@ -100,16 +143,18 @@ const Profile = () => {
               <div className="w-[116px] h-[116px] rounded-[100%]">
                 <img
                   className="w-[116px] h-[116px] rounded-[100%] "
-                  src={defaultAvatar}
+                  src={avatar ? avatar : defaultAvatar}
                   alt="defaultAvatar"
                 />
               </div>
             </div>
             <div className="relative z-10 flex justify-center items-center flex-col">
               <div className="font-bold leading-[30px] mt-2">
-                Nguyễn Thế Mạnh
+                {name ? name : "Nguyễn Thế Mạnh"}
               </div>
-              <div className="font-normal leading-[20px]">manhz2003</div>
+              <div className="font-normal leading-[20px]">
+                {email ? email : "manhthenguyen2003@gmail.com"}
+              </div>
             </div>
             <div className="absolute bottom-0 w-full h-[50%] bg-gradient-to-t from-black to-transparent"></div>
           </div>
@@ -158,8 +203,8 @@ const Profile = () => {
                     required
                     className="w-full p-3 border border-solid border-[#e5e5e5] rounded-[8px] mt-4"
                     placeholder="Họ tên của bạn"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={fullname}
+                    onChange={(e) => setFullname(e.target.value)}
                   />
                 </div>
 
@@ -172,6 +217,7 @@ const Profile = () => {
                     required
                     className="w-full p-3 border border-solid border-[#e5e5e5] rounded-[8px] mt-4"
                     placeholder="Email của bạn"
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
@@ -183,6 +229,7 @@ const Profile = () => {
                   <input
                     type="text"
                     required
+                    value={phoneNumber}
                     className="w-full p-3 border border-solid border-[#e5e5e5] rounded-[8px] mt-4"
                     placeholder="Số điện thoại của bạn"
                     onChange={(e) => setPhoneNumber(e.target.value)}
@@ -198,6 +245,7 @@ const Profile = () => {
                     required
                     className="w-full p-3 border border-solid border-[#e5e5e5] rounded-[8px] mt-4"
                     placeholder="Địa chỉ của bạn"
+                    value={address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
@@ -224,7 +272,7 @@ const Profile = () => {
                   <div className="border-solid border-2 border-[#ebebeb] rounded-[10px]">
                     <img
                       className="w-[120px] h-[90px] rounded-[10px]"
-                      src={avatar}
+                      src={avatar ? avatar : defaultAvatar}
                       alt="avatar"
                     />
                     <div className="absolute top-0 left-0 w-full h-full bg-black opacity-0 group-hover:opacity-50 rounded-[10px]">

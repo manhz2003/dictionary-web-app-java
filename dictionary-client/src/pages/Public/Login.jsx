@@ -44,18 +44,16 @@ const Login = () => {
         console.log("Login success:", response);
 
         const roles = response.data.roles.map((role) => role.nameRole);
+        login(response.data);
+
         if (roles.includes("Admin")) {
           navigate("/admin");
         } else {
           navigate("/");
         }
-        login(response.data);
       })
       .catch((error) => {
-        console.error("Login error:", error);
-        toast.error(
-          "Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin đăng nhập."
-        );
+        toast.error("Tài khoản hoặc mật khẩu không chính xác !");
       });
   };
 

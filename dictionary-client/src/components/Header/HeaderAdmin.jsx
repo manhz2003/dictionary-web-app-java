@@ -9,10 +9,16 @@ const HeaderAdmin = () => {
   const { logout, user } = useAuth();
 
   const logoutRef = useRef();
+  const toggleRef = useRef();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (logoutRef.current && !logoutRef.current.contains(event.target)) {
+      if (
+        logoutRef.current &&
+        !logoutRef.current.contains(event.target) &&
+        toggleRef.current &&
+        !toggleRef.current.contains(event.target)
+      ) {
         setLogoutVisible(false);
       }
     };
@@ -44,6 +50,7 @@ const HeaderAdmin = () => {
         <div
           className="flex items-center gap-3 cursor-pointer"
           onClick={toggleLogout}
+          ref={toggleRef}
         >
           <div className="bg-[#d1d5da] rounded-[100%] p-2">
             <FaUser size="24px" color="#fff" />
@@ -58,6 +65,15 @@ const HeaderAdmin = () => {
             ref={logoutRef}
             className="absolute top-[50px] right-0 z-[1000] bg-white border border-gray-100 rounded-[8px] w-[165px] shadow-md"
           >
+            <div className="py-2 px-3 hover:bg-gray-100 cursor-pointer my-1">
+              <Link
+                to={"/reset"}
+                onClick={() => setLogoutVisible(false)}
+                className="block"
+              >
+                Đổi mật khẩu
+              </Link>
+            </div>
             <div
               className="py-2 px-3 hover:bg-gray-100 cursor-pointer my-2"
               onClick={handleLogout}

@@ -34,6 +34,7 @@ import { MdOutlineDescription } from "react-icons/md";
 import { MdAttachFile } from "react-icons/md";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { CiCircleMinus } from "react-icons/ci";
+import { FaLongArrowAltLeft } from "react-icons/fa";
 
 const icons = {
   CiSearch,
@@ -72,6 +73,7 @@ const icons = {
   MdAttachFile,
   IoIosAddCircleOutline,
   CiCircleMinus,
+  FaLongArrowAltLeft,
 };
 
 export default icons;

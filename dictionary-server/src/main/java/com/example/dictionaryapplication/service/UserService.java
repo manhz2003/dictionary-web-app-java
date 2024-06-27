@@ -97,4 +97,24 @@ public class UserService {
         // Gửi email thông báo cấp mật khẩu mới
         emailService.sendForgotPasswordEmail(email, newPassword);
     }
+
+    // Service method
+    public void updateUserProfile(Long userId, String fullname, String email, String phoneNumber, String address, String avatarUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setFullname(fullname);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setAddress(address);
+        user.setAvatarUrl(avatarUrl);
+
+        userRepository.save(user);
+    }
+
+    // Service method
+    public User getUserProfile(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -85,5 +87,40 @@ public class UserController {
 
     private String generateNewPassword() {
         return UUID.randomUUID().toString().substring(0, 8);
+    }
+
+    @PutMapping("/update-profile")
+    public ResponseEntity<String> updateProfile(@RequestBody Map<String, Object> requestData) {
+        Long userId = Long.parseLong(requestData.get("userId").toString());
+        String fullname = (String) requestData.get("fullname");
+        String email = (String) requestData.get("email");
+        String phoneNumber = (String) requestData.get("phoneNumber");
+        String address = (String) requestData.get("address");
+        String avatarUrl = (String) requestData.get("avatarUrl");
+
+        try {
+            userService.updateUserProfile(userId, fullname, email, phoneNumber, address, avatarUrl);
+            return ResponseEntity.ok("Profile updated successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-profile/{userId}")
+    public ResponseEntity<?> getProfile(@PathVariable Long userId) {
+        try {
+            User user = userService.getUserProfile(userId);
+            Map<String, Object> profileData = new HashMap<>();
+            profileData.put("userId", user.getId());
+            profileData.put("fullname", user.getFullname());
+            profileData.put("email", user.getEmail());
+            profileData.put("phoneNumber", user.getPhoneNumber());
+            profileData.put("address", user.getAddress());
+            profileData.put("avatarUrl", user.getAvatarUrl());
+
+            return ResponseEntity.ok(profileData);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

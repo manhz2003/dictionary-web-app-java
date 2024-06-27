@@ -75,6 +75,16 @@ public class User {
         this.userRoles = new HashSet<>();
     }
 
+    public void setRoles(List<Role> roles) {
+        this.userRoles = roles.stream().map(role -> {
+            UserRoles userRole = new UserRoles();
+            userRole.setRole(role);
+            userRole.setUser(this);
+            return userRole;
+        }).collect(Collectors.toSet());
+    }
+
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -156,12 +166,10 @@ public class User {
         this.userRoles = userRoles;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.userRoles = roles.stream().map(role -> {
-            UserRoles userRole = new UserRoles();
-            userRole.setRole(role);
-            userRole.setUser(this);
-            return userRole;
-        }).collect(Collectors.toSet());
+    public void setAvatarUrl(String avatarUrl) {
+    }
+
+    public Object getAvatarUrl() {
+        return null;
     }
 }

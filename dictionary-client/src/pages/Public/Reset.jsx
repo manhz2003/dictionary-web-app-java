@@ -1,17 +1,21 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo-dictionary.png";
 import icons from "../../ultils/icons";
 import path from "../../ultils/path";
 import { toast } from "react-toastify";
+import { apiForgotPassword } from "../../apis/index";
+import { useAuth } from "../../context/authContext";
 
-const { FcGoogle, FaEye, FaEyeSlash } = icons;
+const { FaEye, FaEyeSlash } = icons;
 
 const Reset = () => {
   const [stateTypePassword, setStateTypePassword] = useState(true);
-  const [password, setPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleShowPassword = () => {
     setStateTypePassword(!stateTypePassword);
@@ -24,7 +28,20 @@ const Reset = () => {
     } else if (newPassword !== confirmPassword) {
       toast.error("Mật khẩu không khớp");
     } else {
-      // Xử lý thay đổi mật khẩu
+      if (user) {
+        apiForgotPassword({ email: user.email, oldPassword, newPassword })
+          .then((response) => {
+            if (response.status === 200) {
+              toast.success("Đổi mật khẩu thành công");
+              navigate("/profile");
+            }
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 400) {
+              toast.error("Mật khẩu cũ không chính xác");
+            }
+          });
+      }
     }
   };
 
@@ -59,10 +76,9 @@ const Reset = () => {
               <div>
                 <input
                   type="password"
-                  id="password"
                   className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                   placeholder="********"
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setOldPassword(e.target.value)}
                 />
               </div>
             </div>
@@ -82,7 +98,6 @@ const Reset = () => {
               <div>
                 <input
                   type="password"
-                  id="password"
                   className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                   placeholder="********"
                   onChange={(e) => setNewPassword(e.target.value)}
@@ -105,7 +120,6 @@ const Reset = () => {
               <div className=" relative">
                 <input
                   type={stateTypePassword ? "password" : "text"}
-                  id="password"
                   className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                   placeholder="********"
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -123,7 +137,10 @@ const Reset = () => {
               </div>
             </div>
             <div className="flex items-center justify-center mt-8">
-              <button className="w-full bg-[#d42525] p-4 text-[#fff] rounded-[8px]">
+              <button
+                type="submit"
+                className="w-full bg-[#d42525] p-4 text-[#fff] rounded-[8px]"
+              >
                 Change password
               </button>
             </div>

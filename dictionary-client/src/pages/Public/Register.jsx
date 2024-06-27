@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import logo from "../../assets/images/logo-dictionary.png";
 import icons from "../../ultils/icons";
 import path from "../../ultils/path";
 import { toast } from "react-toastify";
+import { apiRegister } from "../../apis/index";
+import { Link, useNavigate } from "react-router-dom";
 
 const { FcGoogle, FaEye, FaEyeSlash } = icons;
 
@@ -11,6 +12,9 @@ const Register = () => {
   const [stateTypePassword, setStateTypePassword] = useState(true);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [fullname, setFullname] = useState("");
+  const navigate = useNavigate();
 
   const handleShowPassword = () => {
     setStateTypePassword(!stateTypePassword);
@@ -18,12 +22,27 @@ const Register = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
     if (!password || !confirmPassword) {
       toast.error("Mật khẩu không được bỏ trống");
     } else if (password !== confirmPassword) {
       toast.error("Mật khẩu không khớp");
     } else {
-      // Xử lý đăng ký
+      apiRegister({ password, email, fullname })
+        .then((response) => {
+          if (response.status === 201) {
+            toast.success("Đăng ký tài khoản thành công");
+            navigate("/login");
+          }
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 400) {
+            toast.error("Email đã tồn tại");
+          } else {
+            toast.error("Đăng ký tài khoản thất bại");
+          }
+          console.error(error);
+        });
     }
   };
 
@@ -42,7 +61,7 @@ const Register = () => {
           </div>
         </div>
         <div>
-          <form action="" className="" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="fullname"
@@ -52,10 +71,12 @@ const Register = () => {
               </label>
               <input
                 required
-                type="fullname"
+                type="text"
                 id="fullname"
+                value={fullname}
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                 placeholder="Nguyễn Văn A"
+                onChange={(e) => setFullname(e.target.value)}
               />
             </div>
 
@@ -72,6 +93,8 @@ const Register = () => {
                 id="email"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                 placeholder="yourname@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -89,7 +112,6 @@ const Register = () => {
               </div>
               <input
                 type="password"
-                id="password"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="********"
@@ -101,7 +123,7 @@ const Register = () => {
                 <div className="mt-4">
                   <label
                     required
-                    htmlFor="password"
+                    htmlFor="confirmPassword"
                     className="block text-[15px] text-[#242938] leading-[20px] font-normal "
                   >
                     Xác nhận mật khẩu
@@ -111,7 +133,6 @@ const Register = () => {
               <div className=" relative">
                 <input
                   type={stateTypePassword ? "password" : "text"}
-                  id="password"
                   className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2"
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="********"
@@ -133,13 +154,13 @@ const Register = () => {
                 type="submit"
                 className="w-full bg-[#d42525] p-4 text-[#fff] rounded-[8px]"
               >
-                Register
+                Đăng ký
               </button>
             </div>
 
             <div className="my-10 relative bg-[#99a6b3] border-2 h-[1px] w-full">
               <div className=" absolute bg-[#fff] p-3 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-                or
+                hoặc
               </div>
             </div>
 
@@ -148,7 +169,7 @@ const Register = () => {
                 to={path.LOGIN}
                 className="w-full bg-[#f1f6ff] p-4 text-[#2a61d4] rounded-[8px] hover:bg-[#d1e4ff] block text-center"
               >
-                Login
+                Đăng nhập
               </Link>
             </div>
 
@@ -160,7 +181,7 @@ const Register = () => {
                 <span>
                   <FcGoogle size="16px" />
                 </span>
-                <span>Continue with Google</span>
+                <span>Tiếp tục với Google</span>
               </div>
             </div>
 

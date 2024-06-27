@@ -1,6 +1,6 @@
 import React from "react";
+import { useLocation, Link } from "react-router-dom";
 import path from "../../ultils/path";
-import { Link, useLocation } from "react-router-dom";
 
 const NotFound = () => {
   const location = useLocation();
@@ -167,32 +167,17 @@ const NotFound = () => {
           <p className="md:text-lg lg:text-xl text-gray-600 mt-8">
             Xin lỗi, trang bạn đang tìm kiếm không thể tìm thấy.
           </p>
-          <a
-            href={`/${path.HOME}`}
-            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-gray-100 px-4 py-2 mt-12 rounded transition duration-150"
-            title="Return Home"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-            <span>
+
+          <div className="flex gap-4 items-center justify-center mt-10">
+            <span className="">
               <Link
-                to={isFromAdmin ? "/admin" : "/"}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+                to={isFromAdmin ? `${path.ADMIN}` : `${path.HOME}`}
+                className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-[5px] hover:bg-blue-700"
               >
-                {isFromAdmin ? "Quay trở lại admin" : "Quay trở lại trang chủ"}
+                {isFromAdmin ? "Quay về trang quản trị" : "Quay về trang chủ"}
               </Link>
             </span>
-          </a>
+          </div>
         </div>
       </div>
     </>

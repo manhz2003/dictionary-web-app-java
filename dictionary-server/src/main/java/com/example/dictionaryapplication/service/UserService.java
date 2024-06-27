@@ -9,9 +9,8 @@ import com.example.dictionaryapplication.repository.UserRolesRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -116,5 +115,87 @@ public class UserService {
     public User getUserProfile(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public long getTotalUsers() {
+        return userRepository.count();
+    }
+
+    public List<Map<String, Object>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> {
+                    Map<String, Object> userData = new HashMap<>();
+                    userData.put("id", user.getId());
+                    userData.put("fullname", user.getFullname());
+                    userData.put("email", user.getEmail());
+                    userData.put("phoneNumber", user.getPhoneNumber());
+                    userData.put("address", user.getAddress());
+                    userData.put("role", user.getRoles().stream()
+                            .map(Role::getNameRole)
+                            .collect(Collectors.toList()));
+                    return userData;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public void deleteUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Xóa các bản ghi trong bảng UserRoles trước khi xóa User
+        List<UserRoles> userRoles = userRolesRepository.findByUser_Id(userId);
+        userRolesRepository.deleteAll(userRoles);
+        userRepository.delete(user);
+    }
+
+    public void updateUserProfileAndRoles(Long userId, String fullname, String email, String phoneNumber, String address, Long roleId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setFullname(fullname);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setAddress(address);
+
+        // Tìm UserRoles của người dùng
+        UserRoles userRole = (UserRoles) userRolesRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User role not found"));
+
+        // Cập nhật role
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        userRole.setRole(role);
+
+        userRepository.save(user);
+        userRolesRepository.save(userRole);
+    }
+
+    public User createUser(String fullname, String email, String phoneNumber, String address, Long roleId) {
+        // Kiểm tra xem email đã được đăng ký chưa
+        if (userRepository.findByEmail(email) != null) {
+            throw new RuntimeException("Email is already registered");
+        }
+
+        // Tạo đối tượng User
+        User user = new User();
+        user.setFullname(fullname);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setAddress(address);
+        user.setPassword(passwordEncoder.encode("defaultPassword")); // Có thể tạo mật khẩu mặc định
+
+        // Lưu User vào database
+        User savedUser = userRepository.save(user);
+
+        // Tìm Role dựa trên roleId
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        // Tạo đối tượng UserRoles để gán User với Role
+        UserRoles userRoles = new UserRoles(savedUser, role);
+        userRolesRepository.save(userRoles);
+
+        return savedUser;
     }
 }

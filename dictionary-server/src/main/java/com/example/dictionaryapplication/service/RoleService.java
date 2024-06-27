@@ -1,5 +1,4 @@
 package com.example.dictionaryapplication.service;
-
 import com.example.dictionaryapplication.entity.Role;
 import com.example.dictionaryapplication.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +18,11 @@ public class RoleService {
     }
 
     public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+        return roleRepository.findAllBy();
     }
 
     public Optional<Role> getRoleById(Long id) {
         return roleRepository.findById(id);
-    }
-
-    public Role createRole(Role role) {
-        return roleRepository.save(role);
     }
 
     public List<Role> createRoles(List<Role> roles) {
@@ -43,11 +38,8 @@ public class RoleService {
         return roleRepository.save(role);
     }
 
-    public void deleteRole(Long id) {
-        roleRepository.deleteById(id);
-    }
-
     public void deleteAllRoles() {
         roleRepository.deleteAll();
     }
+
 }

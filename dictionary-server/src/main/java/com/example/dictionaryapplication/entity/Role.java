@@ -1,5 +1,6 @@
 package com.example.dictionaryapplication.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ public class Role {
     private String nameRole;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore // Bỏ qua thuộc tính userRoles khi serialize thành JSON
     private Set<UserRoles> userRoles;
 
     // Constructors

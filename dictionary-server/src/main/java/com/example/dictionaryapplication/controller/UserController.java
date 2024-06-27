@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -123,4 +124,55 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @GetMapping("/total")
+    public long getTotalUsers() {
+        return userService.getTotalUsers();
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Map<String, Object>>> getAllUsers() {
+        List<Map<String, Object>> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("delete/{userId}")
+    public ResponseEntity<String> deleteUserById(@PathVariable Long userId) {
+        userService.deleteUserById(userId);
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
+    @PutMapping("/update-user")
+    public ResponseEntity<String> updateUserProfileAndRoles(@RequestBody Map<String, Object> requestData) {
+        Long userId = Long.parseLong(requestData.get("userId").toString());
+        String fullname = (String) requestData.get("fullname");
+        String email = (String) requestData.get("email");
+        String phoneNumber = (String) requestData.get("phoneNumber");
+        String address = (String) requestData.get("address");
+        Long roleId = Long.parseLong(requestData.get("roleId").toString());
+
+        try {
+            userService.updateUserProfileAndRoles(userId, fullname, email, phoneNumber, address, roleId);
+            return ResponseEntity.ok("Profile updated successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/create-user")
+    public ResponseEntity<String> createUser(@RequestBody Map<String, Object> requestData) {
+        String fullname = (String) requestData.get("fullname");
+        String email = (String) requestData.get("email");
+        String phoneNumber = (String) requestData.get("phoneNumber");
+        String address = (String) requestData.get("address");
+        Long roleId = Long.parseLong(requestData.get("roleId").toString());
+
+        try {
+            userService.createUser(fullname, email, phoneNumber, address, roleId);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }

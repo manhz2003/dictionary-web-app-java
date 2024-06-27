@@ -2,12 +2,21 @@ import { useState, useRef, useEffect } from "react";
 import { Table, Drawer, Button } from "../../components/index";
 import icons from "../../ultils/icons";
 import { toast } from "react-toastify";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import {
+  apiGetAllRole,
+  apiGetAllUser,
+  apiGetTotalUser,
+  apiDeleteUserById,
+  apiUpdateUserById,
+  apiCreateUserById,
+} from "../../apis";
 const {
   IoIosCreate,
   CiExport,
   FiTrash2,
   LuPencilLine,
-  FaRegTrashCan,
   FaUser,
   TbVocabulary,
   FaStackExchange,
@@ -15,7 +24,7 @@ const {
 } = icons;
 
 const DashBoard = () => {
-  const [clearSearch, setClearSeach] = useState("");
+  const [valueSearch, setValueSearch] = useState("");
   const [showDes, setShowDes] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("");
   const [fullName, setFullName] = useState("");
@@ -24,82 +33,136 @@ const DashBoard = () => {
   const [email, setEmail] = useState("");
   const [nameRole, setNameRole] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
-
   const [userCount, setUserCount] = useState(0);
   const [vocabCount, setVocabCount] = useState(0);
   const [exampleCount, setExampleCount] = useState(0);
   const [descCount, setDescCount] = useState(0);
+  const [roles, setRoles] = useState([]);
+  const [userLimit, setUserLimit] = useState([]);
+  const [userId, setUserId] = useState(null);
 
+  const [users, setUsers] = useState([]);
+
+  // call api lấy tổng số user
   useEffect(() => {
-    const userInterval = setInterval(() => {
-      if (userCount < 2000) {
-        setUserCount((prevCount) => prevCount + 4);
-      } else {
-        clearInterval(userInterval);
+    apiGetTotalUser()
+      .then((response) => {
+        if (response.status === 200) {
+          setUserLimit(response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch user count: ", error);
+      });
+  }, []);
+
+  // call api lấy toàn bộ role cho select option
+  useEffect(() => {
+    apiGetAllRole()
+      .then((response) => {
+        if (response.status === 200) {
+          setRoles(response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch roles: ", error);
+      });
+  }, []);
+
+  // // call api lấy toàn bộ user
+  useEffect(() => {
+    apiGetAllUser()
+      .then((response) => {
+        if (response.status === 200) {
+          setUsers(response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch users: ", error);
+      });
+  }, []);
+
+  // hàm tải lại dữ liệu user
+  const reloadUser = async () => {
+    try {
+      const response = await apiGetAllUser();
+      if (response.status === 200) {
+        setUsers(response.data);
       }
-    }, 1);
-
-    const vocabInterval = setInterval(() => {
-      if (vocabCount < 2000) {
-        setVocabCount((prevCount) => prevCount + 4);
-      } else {
-        clearInterval(vocabInterval);
-      }
-    }, 1);
-
-    const exampleInterval = setInterval(() => {
-      if (exampleCount < 2000) {
-        setExampleCount((prevCount) => prevCount + 4);
-      } else {
-        clearInterval(exampleInterval);
-      }
-    }, 1);
-    const descInterval = setInterval(() => {
-      if (descCount < 2000) {
-        setDescCount((prevCount) => prevCount + 4);
-      } else {
-        clearInterval(descInterval);
-      }
-    }, 1);
-
-    return () => {
-      clearInterval(userInterval);
-      clearInterval(vocabInterval);
-      clearInterval(exampleInterval);
-      clearInterval(descInterval);
-    };
-  }, [userCount, vocabCount, exampleCount, descCount]);
-  const inputFileRef = useRef();
-
-  const handleDelete = async (record) => {
-    console.log("delete", record);
-  };
-
-  const handleEdit = (record) => {
-    setFullName(record.fullname);
-    setAddress(record.address);
-    setPhoneNumber(record.phoneNumber);
-    setEmail(record.email);
-    setNameRole(record.nameRole);
-    setShowDes(true);
-    setDrawerTitle("Cập nhật user");
-    setIsEditMode(true);
-  };
-
-  const handleClearSearch = () => {
-    setClearSeach("");
-  };
-
-  const handleDeleteImage = () => {
-    if (inputFileRef.current) {
-      inputFileRef.current.value = "";
+    } catch (error) {
+      console.error("Failed to fetch users: ", error);
     }
   };
 
-  const handleSubmit = () => {
+  // thống kê số lượng user, từ vựng, ví dụ, mô tả
+  useEffect(() => {
+    const incrementCount = (setCount, limit) => {
+      setCount((prevCount) => {
+        if (prevCount < limit) {
+          setTimeout(() => incrementCount(setCount, limit), 100);
+          return prevCount + 1;
+        } else {
+          return prevCount;
+        }
+      });
+    };
+
+    incrementCount(setUserCount, userLimit);
+    incrementCount(setVocabCount, 1000);
+    incrementCount(setExampleCount, 1000);
+    incrementCount(setDescCount, 1000);
+  }, [userLimit]);
+
+  const handleSubmit = async () => {
     if (!fullName || !address || !phoneNumber || !email || !nameRole) {
       toast.error("Vui lòng nhập đầy đủ thông tin");
       return;
+    }
+
+    const userData = {
+      fullname: fullName,
+      email: email,
+      phoneNumber: phoneNumber,
+      address: address,
+      roleId: roles.find((role) => role.nameRole === nameRole)?.id,
+    };
+
+    const userDataEdit = {
+      fullname: fullName,
+      email: email,
+      phoneNumber: phoneNumber,
+      address: address,
+      roleId: roles.find((role) => role.nameRole === nameRole)?.id,
+      userId: userId,
+    };
+
+    try {
+      if (isEditMode) {
+        await apiUpdateUserById(userDataEdit);
+        toast.success("Cập nhật thông tin người dùng thành công");
+      } else {
+        await apiCreateUserById(userData);
+        toast.success("Thêm mới người dùng thành công");
+      }
+
+      setShowDes(false);
+      reloadUser();
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi cập nhật/thêm mới người dùng");
+    }
+  };
+
+  // Xử lý xóa user
+  const handleDelete = async (record) => {
+    try {
+      const response = await apiDeleteUserById(record.id);
+      if (response.status === 200) {
+        toast.success("Xóa user thành công");
+        reloadUser();
+      }
+    } catch (error) {
+      console.error("Failed to delete user: ", error);
+      toast.error("Xóa user thất bại");
     }
   };
 
@@ -114,152 +177,114 @@ const DashBoard = () => {
     setNameRole("");
   };
 
+  const handleEdit = (record) => {
+    setUserId(record.id);
+    setFullName(record.fullname);
+    setAddress(record.address);
+    setPhoneNumber(record.phoneNumber);
+    setEmail(record.email);
+    setNameRole(record.nameRole);
+    setShowDes(true);
+    setDrawerTitle("Cập nhật user");
+    setIsEditMode(true);
+  };
+
+  const handleDeleteImage = () => {
+    if (inputFileRef.current) {
+      inputFileRef.current.value = "";
+    }
+  };
+
   const column = [
     {
       title: "No",
       key: "no",
-      sort: true,
+      render: (text, record, index) => index + 1,
     },
     {
       title: "Họ và tên",
-      key: "fullName",
+      key: "fullname",
+      dataIndex: "fullname",
       sort: true,
     },
     {
       title: "Email",
       key: "email",
+      dataIndex: "email",
       sort: true,
     },
     {
       title: "Số điện thoại",
       key: "phoneNumber",
+      dataIndex: "phoneNumber",
       sort: true,
     },
-
     {
       title: "Địa chỉ",
       key: "address",
+      dataIndex: "address",
       sort: true,
     },
-
     {
       title: "Role",
-      key: "nameRole",
-      sort: true,
+      key: "role",
+      render: (text, record) => record.role.join(", "),
     },
-
     {
       title: "Action",
       key: "action",
-      render: (text, record) => {
-        return (
-          <div className="flex items-center gap-3 cursor-pointer">
-            <FiTrash2 color="red" onClick={() => handleDelete(record)} />
-            <LuPencilLine color="#1677ff" onClick={() => handleEdit(record)} />
-          </div>
-        );
-      },
+      render: (text, record) => (
+        <div className="flex items-center gap-3 cursor-pointer">
+          <FiTrash2 color="red" onClick={() => handleDelete(record)} />
+          <LuPencilLine color="#1677ff" onClick={() => handleEdit(record)} />
+        </div>
+      ),
     },
   ];
 
-  const data = [
-    {
-      no: 1,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 2,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 3,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 4,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 5,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 6,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 7,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 8,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 9,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 10,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 11,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-    {
-      no: 12,
-      fullName: "Nguyễn Văn A",
-      email: "nguyenvana@gmail.com",
-      phoneNumber: "0987739823",
-      address: "Hà Nội",
-      nameRole: "User",
-    },
-  ];
+  async function exportToExcel(dataSelect) {
+    let workbook = new ExcelJS.Workbook();
+    let worksheet = workbook.addWorksheet("Users");
+
+    worksheet.columns = [
+      { header: "No", key: "no", width: 10 },
+      { header: "FullName", key: "fullname", width: 30 },
+      { header: "Email", key: "email", width: 30 },
+      { header: "NumberPhone", key: "phoneNumber", width: 20 },
+      { header: "Address", key: "address", width: 30 },
+      { header: "Role", key: "role", width: 20 },
+    ];
+
+    dataSelect?.forEach((value, index) => {
+      let roles = value.role.join(", "); // Chuyển mảng role thành chuỗi
+      worksheet.addRow({
+        no: index + 1,
+        fullname: value.fullname,
+        email: value.email,
+        phoneNumber: value.phoneNumber,
+        address: value.address,
+        role: roles,
+      });
+    });
+
+    let buffer = await workbook.xlsx.writeBuffer();
+    let blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "users.xlsx");
+  }
+
+  const handleExportClick = async () => {
+    if (Array.isArray(users) && users.length > 0) {
+      await exportToExcel(users);
+    } else {
+      toast.error("Không có dữ liệu để xuất file");
+    }
+  };
+
+  const handleSearch = (searchTerm) => {
+    setValueSearch(searchTerm);
+  };
 
   const groupButton = [
     {
@@ -270,10 +295,8 @@ const DashBoard = () => {
             className="text-[15px] p-[11px] border-2 border-gray-100 rounded-[7px] outline-none w-[300px]"
             type="text"
             placeholder="Tìm kiếm ..."
-            onChange={(e) => {
-              setClearSeach(e.target.value);
-            }}
-            value={clearSearch}
+            onChange={(e) => setValueSearch(e.target.value)}
+            value={valueSearch}
           />
         </div>
       ),
@@ -286,9 +309,7 @@ const DashBoard = () => {
             style={
               "bg-[#d42525] text-[#fff] py-3 text-[16px] flex item-center gap-2"
             }
-            handleOnclick={() => {
-              console.log("search");
-            }}
+            handleOnclick={() => {}}
           >
             search
           </Button>
@@ -303,7 +324,9 @@ const DashBoard = () => {
             style={
               "bg-[#fff] text-[#000] py-3 text-[16px] flex item-center gap-2"
             }
-            handleOnclick={handleClearSearch}
+            handleOnclick={() => {
+              setValueSearch("");
+            }}
           >
             Clear
           </Button>
@@ -387,7 +410,7 @@ const DashBoard = () => {
                 "bg-[#d42525] text-[#fff] py-3 text-[16px] flex item-center gap-2"
               }
               icon={<CiExport />}
-              handleOnclick={() => {}}
+              handleOnclick={handleExportClick}
             >
               Export
             </Button>
@@ -398,9 +421,11 @@ const DashBoard = () => {
         <Table
           title="Quản lý user"
           columns={column}
-          data={data}
+          data={users}
           maxH={300}
           groupButton={groupButton}
+          valueSearch={valueSearch}
+          handleSearch={handleSearch}
         />
       </div>
       {showDes && (
@@ -425,8 +450,11 @@ const DashBoard = () => {
                 onChange={(e) => setNameRole(e.target.value)}
               >
                 <option value="">Phân quyền hạn</option>
-                <option value="Admin">Admin</option>
-                <option value="User">User</option>
+                {roles.map((role) => (
+                  <option key={role.id} value={role.nameRole}>
+                    {role.nameRole}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -442,7 +470,7 @@ const DashBoard = () => {
                 id="text"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
                 placeholder="Nguyễn Văn A"
-                value={fullName}
+                value={fullName || ""}
                 onChange={(e) => setFullName(e.target.value)}
               />
             </div>
@@ -460,7 +488,7 @@ const DashBoard = () => {
                 id="text"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
                 placeholder="nguyenvana@gmail.com"
-                value={email}
+                value={email || ""}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -478,7 +506,7 @@ const DashBoard = () => {
                 id="text"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
                 placeholder="0987739823"
-                value={phoneNumber}
+                value={phoneNumber || ""}
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
             </div>
@@ -496,7 +524,7 @@ const DashBoard = () => {
                 id="text"
                 className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
                 placeholder="Địa chỉ của bạn"
-                value={address}
+                value={address || ""}
                 onChange={(e) => setAddress(e.target.value)}
               />
             </div>

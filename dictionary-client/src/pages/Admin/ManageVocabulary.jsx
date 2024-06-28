@@ -5,6 +5,13 @@ import { toast } from "react-toastify";
 import { readFileDataImport } from "../../ultils/helper";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import {
+  apiDeleteDictionary,
+  apiUpdateDictionary,
+  apiCreateDictionary,
+  apiGetAllDictionary,
+} from "../../apis";
+
 const {
   IoIosCreate,
   CiExport,

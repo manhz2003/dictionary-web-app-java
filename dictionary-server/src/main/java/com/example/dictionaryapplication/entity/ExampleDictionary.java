@@ -13,6 +13,7 @@ public class ExampleDictionary {
     @JoinColumn(name = "dictionary_id", referencedColumnName = "id")
     private Dictionary dictionary;
 
+
     @Column(name = "example_vietnamese")
     private String exampleVietnamese;
 

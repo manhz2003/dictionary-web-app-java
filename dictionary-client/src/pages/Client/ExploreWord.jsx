@@ -1,39 +1,38 @@
+import React, { useState, useEffect } from "react";
 import { Banner, BannerBottom } from "../../components/index";
 import icons from "../../ultils/icons";
-import categoryAnimal from "../../assets/images/category-animal.jpeg";
-import categoryFuiltTree from "../../assets/images/category-fuilt-tree.jpeg";
-import categoryItem from "../../assets/images/category-item.jpeg";
-import categoryIt from "../../assets/images/category-it.jpeg";
-import categoryCommunicate from "../../assets/images/category-communicate.jpeg";
-import categoryActionGestures from "../../assets/images/category-actions-gestures.jpeg";
-
+import { apiGetAllCategory, apiGetTotalCategory } from "../../apis";
 const {} = icons;
 
 const ExloreWord = () => {
-  const categories = [
-    { name: "Động vật", englishName: "Animal", image: categoryAnimal },
-    {
-      name: "Cây cối, hoa quả",
-      englishName: "Plant and Fruits",
-      image: categoryFuiltTree,
-    },
-    { name: "Đồ vật", englishName: "items", image: categoryItem },
-    {
-      name: "giao tiếp",
-      englishName: "Communicate",
-      image: categoryCommunicate,
-    },
-    {
-      name: "hành động, cử chỉ",
-      englishName: "Actions, gestures",
-      image: categoryActionGestures,
-    },
-    {
-      name: "Chuyên ngành IT",
-      englishName: "majoring in IT",
-      image: categoryIt,
-    },
-  ];
+  const [categories, setCategories] = useState([]);
+  const [totalCategories, setTotalCategories] = useState(0);
+
+  // Gọi API để lấy danh sách các danh mục
+  useEffect(() => {
+    apiGetAllCategory()
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  }, []);
+
+  // gọi api để lấy tổng số danh mục
+  useEffect(() => {
+    apiGetTotalCategory()
+      .then((response) => {
+        setTotalCategories(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching total categories:", error);
+      });
+  }, []);
+
+  const handleCategoryClick = (categoryId) => {
+    console.log("Category ID:", categoryId);
+  };
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -45,24 +44,25 @@ const ExloreWord = () => {
       </div>
 
       <div className="w-full flex justify-center items-center mt-12 gap-8 flex-wrap">
-        {categories.map((category, index) => (
+        {categories.map((category) => (
           <div
-            key={index}
+            key={category.id}
             className="bg-[#f5f8f9] rounded-[12px] p-5 w-[342px] flex gap-4 items-center cursor-pointer"
+            onClick={() => handleCategoryClick(category.id)}
           >
             <div className="rounded-[10px] w-[90px] h-[90px]">
               <img
                 className="rounded-[10px] w-[90px] h-[90px]"
-                src={category.image}
-                alt={category.name}
+                src={category.thumbnail}
+                alt={category.nameCategory}
               />
             </div>
             <div>
               <div className="font-bold text-[18px] text-[#242938] leading-[28px]">
-                {category.name}
+                {category.nameCategory}
               </div>
               <div className="font-normal text-[18px] text-[#90939b] leading-[28px]">
-                {category.englishName}
+                {category.description}
               </div>
             </div>
           </div>
@@ -77,10 +77,10 @@ const ExloreWord = () => {
           <div className="flex gap-16">
             <div className="flex flex-col gap-3 justify-center items-center">
               <div className="text-[28px] font-semibold text-[#fff] leading-[36px]">
-                23.940
+                {totalCategories}
               </div>
               <div className="text-[14px] text-[#d3e0ec] leading-[20px] font-medium">
-                Từ vựng
+                Danh mục
               </div>
             </div>
 
@@ -102,7 +102,7 @@ const ExloreWord = () => {
                 23.940
               </div>
               <div className="text-[14px] text-[#d3e0ec] leading-[20px] font-medium">
-                Ghi chú
+                Mô tả
               </div>
             </div>
           </div>

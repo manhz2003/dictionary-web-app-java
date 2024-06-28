@@ -19,7 +19,7 @@ const {
   LuPencilLine,
   FaUser,
   TbVocabulary,
-  FaStackExchange,
+  BiCategory,
   MdOutlineDescription,
 } = icons;
 
@@ -353,6 +353,18 @@ const DashBoard = () => {
           </div>
 
           <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[238px] flex justify-center items-center gap-5">
+            <div className="bg-[#ffba67] p-5 rounded-[100%]">
+              <BiCategory size="22px" color="#fff" />
+            </div>
+            <div className="flex flex-col gap-3 w-[50%]">
+              <div className=" text-[30px] font-bold leading-[22px]">
+                {exampleCount}
+              </div>
+              <div className="font-semibold leading-[22px]">Danh mục</div>
+            </div>
+          </div>
+
+          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[238px] flex justify-center items-center gap-5">
             <div className="bg-[#ff9b89] p-5 rounded-[100%]">
               <TbVocabulary size="22px" color="#fff" />
             </div>
@@ -361,18 +373,6 @@ const DashBoard = () => {
                 {vocabCount}
               </div>
               <div className="font-semibold leading-[22px]">Từ vựng</div>
-            </div>
-          </div>
-
-          <div className="bg-[#fff] text-[#333] leading-3 text-[20px] rounded-[6px] h-[130px] w-[238px] flex justify-center items-center gap-5">
-            <div className="bg-[#ffba67] p-5 rounded-[100%]">
-              <FaStackExchange size="22px" color="#fff" />
-            </div>
-            <div className="flex flex-col gap-3 w-[50%]">
-              <div className=" text-[30px] font-bold leading-[22px]">
-                {exampleCount}
-              </div>
-              <div className="font-semibold leading-[22px]">Ví dụ</div>
             </div>
           </div>
 

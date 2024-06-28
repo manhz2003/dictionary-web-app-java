@@ -17,20 +17,25 @@ const Profile = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [fullname, setFullname] = useState("");
-
-  const { user } = useAuth();
+  const [fullEmail, setFullEmail] = useState("");
+  const [avatarValue, setAvatarValue] = useState("");
+  const { user, login } = useAuth();
+  const [userId, setUserId] = useState("");
 
   // api hiển thị data profile
   useEffect(() => {
     if (user) {
       apiGetProfile(user.id)
         .then((response) => {
-          setName(response.data.fullname);
-          setFullname(response.data.fullname);
-          setEmail(response.data.email);
-          setPhoneNumber(response.data.phoneNumber);
-          setAddress(response.data.address);
-          setAvatar(response.data.avatar);
+          setUserId(user.id);
+          setFullname(response.data.fullname || "");
+          setFullEmail(response.data.email || "");
+          setPhoneNumber(response.data.phoneNumber || "");
+          setAddress(response.data.address || "");
+          setAvatarValue(response.data.avatar || defaultAvatar);
+          setAvatar(response.data.avatar || defaultAvatar);
+          setName(response.data.fullname || "");
+          setEmail(response.data.email || "");
         })
         .catch((error) => {
           console.error("Get profile error:", error);
@@ -38,71 +43,61 @@ const Profile = () => {
     }
   }, [user]);
 
-  const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      setAvatar(e.target.files[0]);
-    }
+  // tải lại data profile
+  const reloadProfile = () => {
+    apiGetProfile(user.id)
+      .then((response) => {
+        setUserId(user.id);
+        setFullname(response.data.fullname);
+        setFullEmail(response.data.email);
+        setPhoneNumber(response.data.phoneNumber);
+        setAddress(response.data.address);
+        setAvatarValue(response.data.avatarUrl);
+        setAvatar(response.data.avatarUrl);
+        setName(response.data.fullname);
+        setEmail(response.data.email);
+        console.log(response.data);
+        login(response.data);
+      })
+      .catch((error) => {
+        console.error("Get profile error:", error);
+      });
   };
 
-  const updateProfile = () => {
-    const formData = new FormData();
-    formData.append("userId", user.id);
-    formData.append("fullname", fullname);
-    formData.append("email", email);
-    formData.append("phoneNumber", phoneNumber);
-    formData.append("address", address);
-    if (avatar !== defaultAvatar) {
-      formData.append("avatar", avatar);
+  const handleAvatarChange = (e) => {
+    setAvatarValue(e.target.value);
+  };
+
+  const handleDeleteAvatar = () => {
+    setAvatarValue(defaultAvatar);
+  };
+
+  // lưu thông tin profile
+  const handleSave = () => {
+    if (!fullname || !fullEmail || !phoneNumber || !address || !avatarValue) {
+      toast.error("Vui lòng nhập đầy đủ thông tin.");
+      return;
     }
 
-    apiUpdateProfile(formData)
+    let dataProfile = {
+      userId: userId,
+      fullname: fullname,
+      email: fullEmail,
+      phoneNumber: phoneNumber,
+      address: address,
+      avatar: avatarValue,
+    };
+
+    apiUpdateProfile(dataProfile)
       .then((response) => {
         if (response.status === 200) {
           toast.success("Cập nhật thông tin thành công.");
+          reloadProfile();
         }
       })
       .catch((error) => {
         toast.error("Cập nhật thông tin thất bại.");
       });
-  };
-
-  const handleDeleteAvatar = () => {
-    setAvatar(defaultAvatar);
-  };
-
-  const validateEmail = (email) => {
-    var re =
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  };
-
-  const validatePhoneNumber = (phoneNumber) => {
-    var re = /^0[0-9]{9}$/;
-    return re.test(phoneNumber);
-  };
-
-  const handleSave = () => {
-    if (!name) {
-      toast.error("Họ và tên là bắt buộc.");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      toast.error("Email không hợp lệ.");
-      return;
-    }
-
-    if (!validatePhoneNumber(phoneNumber)) {
-      toast.error("Số điện thoại không hợp lệ.");
-      return;
-    }
-
-    if (!address) {
-      toast.error("Địa chỉ là bắt buộc.");
-      return;
-    }
-
-    updateProfile();
   };
 
   const fakeWords = Array(403).fill("Nhà môi trường học");
@@ -143,7 +138,7 @@ const Profile = () => {
               <div className="w-[116px] h-[116px] rounded-[100%]">
                 <img
                   className="w-[116px] h-[116px] rounded-[100%] "
-                  src={avatar ? avatar : defaultAvatar}
+                  src={avatar || defaultAvatar}
                   alt="defaultAvatar"
                 />
               </div>
@@ -217,8 +212,8 @@ const Profile = () => {
                     required
                     className="w-full p-3 border border-solid border-[#e5e5e5] rounded-[8px] mt-4"
                     placeholder="Email của bạn"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={fullEmail}
+                    onChange={(e) => setFullEmail(e.target.value)}
                   />
                 </div>
 
@@ -256,10 +251,12 @@ const Profile = () => {
                   </label>
                   <div>
                     <input
-                      type="file"
+                      type="text"
                       required
                       className="w-full p-3 border border-solid border-[#e5e5e5] rounded-[8px] mt-4"
-                      onChange={handleFileChange}
+                      placeholder="Dán url ảnh vào đây"
+                      onChange={handleAvatarChange}
+                      value={avatarValue}
                     />
                   </div>
                 </div>
@@ -272,7 +269,7 @@ const Profile = () => {
                   <div className="border-solid border-2 border-[#ebebeb] rounded-[10px]">
                     <img
                       className="w-[120px] h-[90px] rounded-[10px]"
-                      src={avatar ? avatar : defaultAvatar}
+                      src={avatarValue || defaultAvatar}
                       alt="avatar"
                     />
                     <div className="absolute top-0 left-0 w-full h-full bg-black opacity-0 group-hover:opacity-50 rounded-[10px]">

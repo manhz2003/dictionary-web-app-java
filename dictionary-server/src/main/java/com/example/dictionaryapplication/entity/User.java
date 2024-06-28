@@ -84,7 +84,6 @@ public class User {
         }).collect(Collectors.toSet());
     }
 
-
     // Getters and Setters
     public Long getId() {
         return id;
@@ -167,9 +166,10 @@ public class User {
     }
 
     public void setAvatarUrl(String avatarUrl) {
+        this.avatar = avatarUrl;
     }
 
-    public Object getAvatarUrl() {
-        return null;
+    public String getAvatarUrl() {
+        return avatar;
     }
 }

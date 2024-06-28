@@ -38,6 +38,8 @@ const HeaderAdmin = () => {
     setLogoutVisible(false);
   };
 
+  console.log(user);
+
   return (
     <div className="flex items-center justify-between bg-[#fbfcff] h-[80px] px-[45px] border-b border-gray-100 shadow-md relative z-50">
       <div>
@@ -52,8 +54,18 @@ const HeaderAdmin = () => {
           onClick={toggleLogout}
           ref={toggleRef}
         >
-          <div className="bg-[#d1d5da] rounded-[100%] p-2">
-            <FaUser size="24px" color="#fff" />
+          <div className="bg-[#d1d5da] rounded-[100%] w-[40px] h-[40px] ">
+            {user && user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="avatar"
+                className="w-[40px] h-[40px] rounded-[100%]"
+              />
+            ) : (
+              <div className="p-2">
+                <FaUser size="24px" color="#fff" />
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2 text-[#242938] select-none">
             <div>{user && user.fullname}</div>

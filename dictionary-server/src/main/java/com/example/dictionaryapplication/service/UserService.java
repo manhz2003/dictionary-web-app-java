@@ -97,7 +97,6 @@ public class UserService {
         emailService.sendForgotPasswordEmail(email, newPassword);
     }
 
-    // Service method
     public void updateUserProfile(Long userId, String fullname, String email, String phoneNumber, String address, String avatarUrl) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

@@ -124,8 +124,18 @@ const Header = () => {
               onClick={toggleLogout}
               ref={toggleRef}
             >
-              <div className="bg-[#d1d5da] rounded-[100%] p-2">
-                <FaUser size="24px" color="#fff" />
+              <div className="bg-[#d1d5da] rounded-[100%]">
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt="avatar"
+                    className="w-[40px] h-[40px] rounded-[100%]"
+                  />
+                ) : (
+                  <div className="p-2">
+                    <FaUser size="24px" color="#fff" />
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-2 text-[#242938] select-none">
                 <div>{user && user.fullname}</div>

@@ -41,8 +41,6 @@ const Login = () => {
     // Gọi API login
     apiLogin({ email, password })
       .then((response) => {
-        console.log("Login success:", response);
-
         const roles = response.data.roles.map((role) => role.nameRole);
         login(response.data);
 

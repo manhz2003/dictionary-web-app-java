@@ -97,7 +97,7 @@ public class UserController {
         String email = (String) requestData.get("email");
         String phoneNumber = (String) requestData.get("phoneNumber");
         String address = (String) requestData.get("address");
-        String avatarUrl = (String) requestData.get("avatarUrl");
+        String avatarUrl = (String) requestData.get("avatar");
 
         try {
             userService.updateUserProfile(userId, fullname, email, phoneNumber, address, avatarUrl);
@@ -112,12 +112,12 @@ public class UserController {
         try {
             User user = userService.getUserProfile(userId);
             Map<String, Object> profileData = new HashMap<>();
-            profileData.put("userId", user.getId());
+            profileData.put("id", user.getId());
             profileData.put("fullname", user.getFullname());
             profileData.put("email", user.getEmail());
             profileData.put("phoneNumber", user.getPhoneNumber());
             profileData.put("address", user.getAddress());
-            profileData.put("avatarUrl", user.getAvatarUrl());
+            profileData.put("avatar", user.getAvatarUrl());
 
             return ResponseEntity.ok(profileData);
         } catch (RuntimeException e) {

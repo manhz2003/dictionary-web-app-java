@@ -1,8 +1,18 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Table, Drawer, Button } from "../../components/index";
 import icons from "../../ultils/icons";
 const { IoIosCreate, CiExport, FiTrash2, LuPencilLine, FaRegTrashCan } = icons;
 import imageDefault from "../../assets/images/avatar-default.jpeg";
+import {
+  apiDeleteCategory,
+  apiUpdateCategory,
+  apiCreateCategory,
+  apiGetAllCategory,
+} from "../../apis";
+import { toast } from "react-toastify";
+
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 const ManageCategory = () => {
   const [clearSearch, setClearSeach] = useState("");
@@ -12,20 +22,95 @@ const ManageCategory = () => {
   const [nameCategory, setNameCategory] = useState("");
   const [description, setDescription] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+  const [thumbnail, setThumbnail] = useState("");
+  const [idCategory, setIdCategory] = useState("");
+  const [categoryData, setCategoryData] = useState([]);
 
-  const inputFileRef = useRef();
+  // call api lấy toàn bộ category
+  useEffect(() => {
+    apiGetAllCategory()
+      .then((response) => {
+        if (response.status === 200) {
+          setCategoryData(response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch category: ", error);
+      });
+  }, []);
 
-  const handleDelete = async (record) => {
-    console.log("delete", record);
+  // hàm tải lại dữ liệu category
+  const reloadCategory = async () => {
+    try {
+      const response = await apiGetAllCategory();
+      if (response.status === 200) {
+        setCategoryData(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch users: ", error);
+    }
   };
 
+  // Xử lý xóa category
+  const handleDelete = async (record) => {
+    try {
+      const response = await apiDeleteCategory(record.id);
+      if (response.status === 200) {
+        toast.success("Xóa danh mục thành công");
+        reloadCategory();
+      }
+    } catch (error) {
+      console.error("Failed to delete category: ", error);
+      toast.error("Xóa danh mục thất bại");
+    }
+  };
+
+  // Xử lý sửa category
   const handleEdit = (record) => {
-    setNameCategory(record.categoryName);
+    setNameCategory(record.nameCategory);
     setDescription(record.description);
-    setDefaultImage(record.thumnail);
+    setDefaultImage(record.thumbnail);
+    setThumbnail(record.thumbnail);
+    setIdCategory(record.id);
     setShowDes(true);
     setDrawerTitle("Cập nhật danh mục");
     setIsEditMode(true);
+  };
+
+  // xủ lý xuất file excel
+  async function exportToExcel(dataSelect) {
+    let workbook = new ExcelJS.Workbook();
+    let worksheet = workbook.addWorksheet("category");
+
+    worksheet.columns = [
+      { header: "No", key: "no", width: 10 },
+      { header: "nameCategory", key: "nameCategory", width: 30 },
+      { header: "description", key: "description", width: 30 },
+      { header: "thumbnail", key: "thumbnail", width: 20 },
+    ];
+
+    dataSelect?.forEach((value, index) => {
+      worksheet.addRow({
+        no: index + 1,
+        nameCategory: value.nameCategory,
+        description: value.description,
+        thumbnail: value.thumbnail,
+      });
+    });
+
+    let buffer = await workbook.xlsx.writeBuffer();
+    let blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "category.xlsx");
+  }
+
+  const handleExportClick = async () => {
+    if (Array.isArray(categoryData) && categoryData.length > 0) {
+      await exportToExcel(categoryData);
+    } else {
+      toast.error("Không có dữ liệu để xuất file");
+    }
   };
 
   const handleClearSearch = () => {
@@ -33,25 +118,59 @@ const ManageCategory = () => {
   };
 
   const handleDeleteImage = () => {
-    setDefaultImage(imageDefault);
-    if (inputFileRef.current) {
-      inputFileRef.current.value = "";
-    }
+    setThumbnail(defaultImage);
   };
 
-  const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      setDefaultImage(URL.createObjectURL(e.target.files[0]));
-    }
+  const handleThumnailChange = (e) => {
+    setThumbnail(e.target.value);
   };
 
-  const handleSubmit = () => {
-    if (nameCategory && description) {
+  const handleSubmit = async () => {
+    if (!nameCategory || !description || !thumbnail) {
+      toast.error("Vui lòng nhập đủ thông tin");
+      return;
+    }
+
+    const categoryEdit = {
+      id: idCategory,
+      nameCategory,
+      description,
+      thumbnail,
+    };
+
+    const categoryCreate = {
+      nameCategory,
+      description,
+      thumbnail,
+    };
+
+    try {
       if (isEditMode) {
-        console.log("update");
+        await apiUpdateCategory(categoryEdit)
+          .then((response) => {
+            if (response.status === 200) {
+              toast.success("Cập nhật danh mục thành công");
+            }
+          })
+          .catch((error) => {
+            toast.error("Đã xảy ra lỗi khi cập nhật danh mục");
+          });
       } else {
-        console.log("add new");
+        await apiCreateCategory(categoryCreate)
+          .then((response) => {
+            if (response.status === 200) {
+              toast.success("Thêm mới danh mục thành công");
+            }
+          })
+          .catch((error) => {
+            toast.error("Đã xảy ra lỗi khi thêm mới danh mục");
+          });
       }
+
+      setShowDes(false);
+      reloadCategory();
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi cập nhật/thêm mới danh mục");
     }
   };
 
@@ -68,11 +187,11 @@ const ManageCategory = () => {
     {
       title: "No",
       key: "no",
-      sort: true,
+      render: (text, record, index) => index + 1,
     },
     {
       title: "Tên danh mục",
-      key: "categoryName",
+      key: "nameCategory",
       sort: true,
     },
     {
@@ -82,7 +201,7 @@ const ManageCategory = () => {
     },
     {
       title: "Hình ảnh",
-      key: "thumnail",
+      key: "thumbnail",
       sort: true,
     },
 
@@ -97,45 +216,6 @@ const ManageCategory = () => {
           </div>
         );
       },
-    },
-  ];
-
-  const data = [
-    {
-      no: 1,
-      categoryName: "Động vật",
-      description: "Đây là mô tả cho danh mục 1",
-      thumnail: "ảnh",
-    },
-    {
-      no: 2,
-      categoryName: "Cây cối",
-      description: "Đây là mô tả cho danh mục 2",
-      thumnail: "ảnh",
-    },
-    {
-      no: 3,
-      categoryName: "Động vật",
-      description: "Đây là mô tả cho danh mục 1",
-      thumnail: "ảnh",
-    },
-    {
-      no: 4,
-      categoryName: "Cây cối",
-      description: "Đây là mô tả cho danh mục 2",
-      thumnail: "ảnh",
-    },
-    {
-      no: 5,
-      categoryName: "Động vật",
-      description: "Đây là mô tả cho danh mục 1",
-      thumnail: "ảnh",
-    },
-    {
-      no: 6,
-      categoryName: "Cây cối",
-      description: "Đây là mô tả cho danh mục 2",
-      thumnail: "ảnh",
     },
   ];
 
@@ -214,7 +294,7 @@ const ManageCategory = () => {
                   "bg-[#d42525] text-[#fff] py-3 text-[16px] flex item-center gap-2"
                 }
                 icon={<CiExport />}
-                handleOnclick={() => {}}
+                handleOnclick={handleExportClick}
               >
                 Export
               </Button>
@@ -225,7 +305,7 @@ const ManageCategory = () => {
           <Table
             title="Danh mục từ vựng"
             columns={column}
-            data={data}
+            data={categoryData}
             maxH={300}
             groupButton={groupButton}
           />
@@ -249,7 +329,7 @@ const ManageCategory = () => {
                   type="text"
                   id="text"
                   className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
-                  placeholder=""
+                  placeholder="Động vật"
                   value={nameCategory}
                   onChange={(e) => setNameCategory(e.target.value)}
                 />
@@ -265,7 +345,7 @@ const ManageCategory = () => {
                   required
                   id="text"
                   className="w-full h-[98px] border border-[#e4e6e8] rounded-[8px] p-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
-                  placeholder=""
+                  placeholder="Động vật là một nhóm sinh vật đa bào, nhân chuẩn ..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -279,11 +359,12 @@ const ManageCategory = () => {
                 </label>
                 <div>
                   <input
-                    type="file"
+                    type="text"
                     required
-                    ref={inputFileRef}
                     className="w-full p-3 border border-solid border-[#e5e5e5] rounded-[8px] mt-4"
-                    onChange={handleFileChange}
+                    placeholder="Dán url ảnh vào đây"
+                    onChange={handleThumnailChange}
+                    value={thumbnail}
                   />
                 </div>
                 <div className=" mt-5">
@@ -294,7 +375,7 @@ const ManageCategory = () => {
                     <div className="border-solid border-2 border-[#ebebeb] rounded-[10px]">
                       <img
                         className="w-[120px] h-[90px] rounded-[10px]"
-                        src={defaultImage}
+                        src={thumbnail || defaultImage}
                         alt="avatar"
                       />
                       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-0 group-hover:opacity-50 rounded-[10px]">
@@ -322,6 +403,7 @@ const ManageCategory = () => {
                       handleDeleteImage();
                       setNameCategory("");
                       setDescription("");
+                      setThumbnail("");
                     }}
                   >
                     Clear

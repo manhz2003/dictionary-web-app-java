@@ -5,3 +5,4 @@ export const apiGetAllRole = () =>
         url: "/roles/all",
         method: "get",
 });
+

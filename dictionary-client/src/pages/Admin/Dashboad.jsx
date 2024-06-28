@@ -11,6 +11,7 @@ import {
   apiDeleteUserById,
   apiUpdateUserById,
   apiCreateUserById,
+  apiGetTotalCategory,
 } from "../../apis";
 const {
   IoIosCreate,
@@ -39,7 +40,9 @@ const DashBoard = () => {
   const [descCount, setDescCount] = useState(0);
   const [roles, setRoles] = useState([]);
   const [userLimit, setUserLimit] = useState([]);
+  const [categoryLimit, setCategoryLimit] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [categoryCount, setCategoryCount] = useState(0);
 
   const [users, setUsers] = useState([]);
 
@@ -56,6 +59,19 @@ const DashBoard = () => {
       });
   }, []);
 
+  // call api lấy tổng số category
+  useEffect(() => {
+    apiGetTotalCategory()
+      .then((response) => {
+        if (response.status === 200) {
+          setCategoryLimit(response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch category count: ", error);
+      });
+  }, []);
+
   // call api lấy toàn bộ role cho select option
   useEffect(() => {
     apiGetAllRole()
@@ -69,7 +85,7 @@ const DashBoard = () => {
       });
   }, []);
 
-  // // call api lấy toàn bộ user
+  // call api lấy toàn bộ user
   useEffect(() => {
     apiGetAllUser()
       .then((response) => {
@@ -111,7 +127,8 @@ const DashBoard = () => {
     incrementCount(setVocabCount, 1000);
     incrementCount(setExampleCount, 1000);
     incrementCount(setDescCount, 1000);
-  }, [userLimit]);
+    incrementCount(setCategoryCount, categoryLimit);
+  }, [userLimit, categoryLimit]);
 
   const handleSubmit = async () => {
     if (!fullName || !address || !phoneNumber || !email || !nameRole) {
@@ -138,11 +155,27 @@ const DashBoard = () => {
 
     try {
       if (isEditMode) {
-        await apiUpdateUserById(userDataEdit);
-        toast.success("Cập nhật thông tin người dùng thành công");
+        await apiUpdateUserById(userDataEdit)
+          .then((response) => {
+            if (response.status === 200) {
+              toast.success("Cập nhật người dùng thành công");
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to update user: ", error);
+            toast.error("Đã xảy ra lỗi khi cập nhật/thêm mới người dùng");
+          });
       } else {
-        await apiCreateUserById(userData);
-        toast.success("Thêm mới người dùng thành công");
+        await apiCreateUserById(userData)
+          .then((response) => {
+            if (response.status === 200) {
+              toast.success("Thêm mới người dùng thành công");
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to create user: ", error);
+            toast.error("Đã xảy ra lỗi khi cập nhật/thêm mới người dùng");
+          });
       }
 
       setShowDes(false);
@@ -242,6 +275,7 @@ const DashBoard = () => {
     },
   ];
 
+  // xủ lý xuất file excel
   async function exportToExcel(dataSelect) {
     let workbook = new ExcelJS.Workbook();
     let worksheet = workbook.addWorksheet("Users");
@@ -358,7 +392,7 @@ const DashBoard = () => {
             </div>
             <div className="flex flex-col gap-3 w-[50%]">
               <div className=" text-[30px] font-bold leading-[22px]">
-                {exampleCount}
+                {categoryCount}
               </div>
               <div className="font-semibold leading-[22px]">Danh mục</div>
             </div>

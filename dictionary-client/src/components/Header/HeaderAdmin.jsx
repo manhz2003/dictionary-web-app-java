@@ -38,8 +38,6 @@ const HeaderAdmin = () => {
     setLogoutVisible(false);
   };
 
-  console.log(user);
-
   return (
     <div className="flex items-center justify-between bg-[#fbfcff] h-[80px] px-[45px] border-b border-gray-100 shadow-md relative z-50">
       <div>

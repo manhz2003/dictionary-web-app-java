@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Table, Drawer, Button, Modal, DragFile } from "../../components/index";
 import icons from "../../ultils/icons";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ import {
   apiUpdateDictionary,
   apiCreateDictionary,
   apiGetAllDictionary,
+  apiGetAllCategory,
 } from "../../apis";
 
 const {
@@ -41,19 +42,52 @@ const ManageVocabulary = () => {
   const [englishExample, setEnglishExample] = useState([""]);
   const [vietnameseExample, setVietnameseExample] = useState([""]);
   const [idCategory, setIdCategory] = useState("");
+  const [dataDictionary, setDataDictionary] = useState("");
+  const [categorySelect, setCategorySelect] = useState([]);
+  const [idVocabulary, setIdVocabulary] = useState("");
 
-  // render data for select category
-  const categories = [
-    { idCategory: 1, nameCategory: "Động vật" },
-    { idCategory: 2, nameCategory: "Cây cối, hoa quả" },
-    { idCategory: 3, nameCategory: "Đồ vật" },
-    { idCategory: 4, nameCategory: "Địa điểm" },
-  ];
+  // call api hiển thị data dictionary
+  useEffect(() => {
+    apiGetAllDictionary()
+      .then((response) => {
+        if (response.status === 200) {
+          setDataDictionary(Array.isArray(response.data) ? response.data : []);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch dictionary: ", error);
+      });
+  }, []);
 
+  // refresh data dictionary
+  const reloadDictionary = () => {
+    apiGetAllDictionary()
+      .then((response) => {
+        if (response.status === 200) {
+          setDataDictionary(Array.isArray(response.data) ? response.data : []);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch dictionary: ", error);
+      });
+  };
+
+  // Xử lý chọn category
+  useEffect(() => {
+    apiGetAllCategory()
+      .then((response) => {
+        setCategorySelect(response.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch category: ", error);
+      });
+  }, []);
+
+  // select category
   const handleSelectChange = (e) => {
     const selectedId = e.target.value;
-    const selectedCategory = categories.find(
-      (category) => category.idCategory === parseInt(selectedId)
+    const selectedCategory = categorySelect.find(
+      (category) => category.id === parseInt(selectedId)
     );
     setIdCategory(selectedId);
     setNameCategory(selectedCategory?.nameCategory || "");
@@ -87,18 +121,31 @@ const ManageVocabulary = () => {
     setVietnameseExample(newItemsV);
   };
 
+  // Xử lý xóa từ điển
   const handleDelete = async (record) => {
-    console.log("delete", record);
+    try {
+      const response = await apiDeleteDictionary(record.id);
+      if (response.status === 204) {
+        toast.success("Xóa từ điển thành công");
+        reloadDictionary();
+      }
+    } catch (error) {
+      console.error("Failed to delete dictionary: ", error);
+      toast.error("Xóa từ điển thất bại");
+    }
   };
 
+  // Xử lý cập nhật từ điển
   const handleEdit = (record) => {
+    setIdVocabulary(record.id);
+    setIdCategory(record.category.id);
     setNameCategory(record.category);
     setEnglish(record.english);
     setVietnamese(record.vietnamese);
     setPhoneticTranscription(record.phoneticTranscription);
     setExplain(record.explain);
     setWordType(record.wordType);
-    setThumnail(record.thumnail);
+    setThumnail(record.thumbnail);
     setEnglishExample(
       Array.isArray(record.englishExample) ? record.englishExample : []
     );
@@ -110,6 +157,23 @@ const ManageVocabulary = () => {
     setIsEditMode(true);
   };
 
+  // Xử lý thêm mới từ điển
+  const handleAddNew = () => {
+    setShowDes(true);
+    setDrawerTitle("Thêm mới từ điển");
+    setIsEditMode(false);
+    setNameCategory("");
+    setEnglish("");
+    setVietnamese("");
+    setPhoneticTranscription("");
+    setExplain("");
+    setWordType("");
+    setThumnail("");
+    setEnglishExample([]);
+    setVietnameseExample([]);
+  };
+
+  // Xử lý import từ điển
   const handleImportButtonClick = () => {
     if (dataImport) {
       toast.success("Import thành công");
@@ -119,6 +183,7 @@ const ManageVocabulary = () => {
     }
   };
 
+  // xem trước dữ liệu import
   const handlePreviewData = useCallback(
     (fileValue) => {
       readFileDataImport(fileValue)
@@ -159,79 +224,104 @@ const ManageVocabulary = () => {
     setClearSearch("");
   };
 
-  const handleSubmit = () => {
-    if (!english || !vietnamese || !phoneticTranscription || !explain) {
-      toast.error("Vui lòng nhập đầy đủ thông tin");
+  // Xử lý cập nhật từ điển hoặc thêm mới từ điển
+  const handleSubmit = async () => {
+    if (
+      !idCategory ||
+      !english ||
+      !vietnamese ||
+      !thumnail ||
+      !explain ||
+      !wordType ||
+      !phoneticTranscription
+    ) {
+      toast.error("Vui lòng nhập đủ thông tin");
       return;
     }
 
-    const newData = {
-      english,
-      vietnamese,
-      phoneticTranscription,
-      explain,
-      wordType,
-      thumnail,
-      category: nameCategory,
-      englishExample: [...englishExample],
-      vietnameseExample: [...vietnameseExample],
-    };
+    const vocabularyEdit = [
+      {
+        id: idVocabulary,
+        english: english,
+        vietnamese: vietnamese,
+        phoneticTranscription: phoneticTranscription,
+        explain: explain,
+        wordType: wordType,
+        thumbnail: thumnail,
+        englishExample: englishExample,
+        vietnameseExample: vietnameseExample,
+        category: idCategory,
+      },
+    ];
 
-    if (isEditMode) {
-      const updatedData = data.map((record) =>
-        record.english === english ? { ...newData } : record
-      );
-      setData(updatedData);
-      toast.success("Đã cập nhật từ điển thành công");
-    } else {
-      const updatedData = [...data, newData];
-      setData(updatedData);
-      toast.success("Đã thêm mới từ điển thành công");
+    const vocabularyCreate = [
+      {
+        dictionary: {
+          english,
+          vietnamese,
+          phoneticTranscription,
+          explanation: explain,
+          wordType,
+          thumbnail: thumnail,
+        },
+
+        examples: [
+          {
+            exampleVietnamese: vietnameseExample,
+            exampleEnglish: englishExample,
+          },
+        ],
+        categoryId: +idCategory,
+      },
+    ];
+
+    console.log(vocabularyCreate);
+
+    try {
+      if (isEditMode) {
+        await apiUpdateDictionary(vocabularyEdit)
+          .then((response) => {
+            if (response.status === 200) {
+              toast.success("Cập nhật từ điển thành công");
+            }
+          })
+          .catch((error) => {
+            toast.error("Đã xảy ra lỗi khi cập nhật từ điển");
+          });
+      } else {
+        await apiCreateDictionary(vocabularyCreate)
+          .then((response) => {
+            if (response.status === 200) {
+              toast.success("Thêm mới từ điển thành công");
+            }
+          })
+          .catch((error) => {
+            toast.error("Đã xảy ra lỗi khi thêm mới từ điển");
+          });
+      }
+
+      setShowDes(false);
+      reloadDictionary();
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi cập nhật/thêm mới từ điển");
     }
-
-    setNameCategory("");
-    setEnglish("");
-    setVietnamese("");
-    setPhoneticTranscription("");
-    setExplain("");
-    setWordType("");
-    setThumnail("");
-    englishExample([]);
-    vietnameseExample([]);
-    setShowDes(false);
-    setIsEditMode(false);
-  };
-
-  const handleAddNew = () => {
-    setShowDes(true);
-    setDrawerTitle("Thêm mới từ điển");
-    setIsEditMode(false);
-    setNameCategory("");
-    setEnglish("");
-    setVietnamese("");
-    setPhoneticTranscription("");
-    setExplain("");
-    setWordType("");
-    setThumnail("");
-    englishExample([]);
-    vietnameseExample([]);
   };
 
   const column = [
     {
       title: "No",
       key: "no",
-      sort: true,
+      render: (text, record, index) => index + 1,
     },
     {
       title: "English",
       key: "english",
-      sort: true,
+      render: (text, record) => record.english || "",
     },
     {
       title: "Vietnamese",
       key: "vietnamese",
-      sort: true,
+      render: (text, record) => record.vietnamese || "",
     },
     {
       title: "Phiên âm",
@@ -251,7 +341,7 @@ const ManageVocabulary = () => {
     {
       title: "Danh mục",
       key: "category",
-      sort: true,
+      render: (text, record) => record.category.nameCategory || "",
     },
     {
       title: "Ví dụ tiếng anh",
@@ -291,7 +381,7 @@ const ManageVocabulary = () => {
     },
     {
       title: "Ảnh mô tả",
-      key: "thumnail",
+      key: "thumbnail",
       sort: true,
     },
 
@@ -316,61 +406,6 @@ const ManageVocabulary = () => {
       },
     },
   ];
-
-  const [data, setData] = useState([
-    {
-      no: 1,
-      english: "banana",
-      vietnamese: "Quả chuối",
-      phoneticTranscription: "bəˈnæn.ə",
-      explain: "Quả chuối là loại quả có vỏ màu vàng",
-      wordType: "Danh từ",
-      category: "Cây cối, hoa quả",
-      thumnail: "ảnh",
-      englishExample: ["I like banana", "Banana is yellow", "Banana is sweet"],
-      vietnameseExample: [
-        "Tôi thích quả chuối",
-        "Quả chuối màu vàng",
-        "Quả chuối ngọt",
-      ],
-    },
-    {
-      no: 2,
-      english: "apple",
-      vietnamese: "Quả táo",
-      phoneticTranscription: "ˈæp.əl",
-      explain: "Quả táo có màu đỏ hoặc xanh lá cây",
-      wordType: "Danh từ",
-      category: "Cây cối, hoa quả",
-      thumnail: "ảnh",
-      englishExample: ["I eat apple"],
-      vietnameseExample: ["Tôi ăn táo"],
-    },
-    {
-      no: 3,
-      english: "orange",
-      vietnamese: "Quả cam",
-      phoneticTranscription: "ˈɔːrɪndʒ",
-      explain: "Quả cam có màu da cam",
-      wordType: "Danh từ",
-      category: "Cây cối, hoa quả",
-      thumnail: "ảnh",
-      englishExample: ["Orange juice is delicious"],
-      vietnameseExample: ["Nước cam rất ngon"],
-    },
-    {
-      no: 4,
-      english: "car",
-      vietnamese: "Xe ô tô",
-      phoneticTranscription: "kɑːr",
-      explain: "Xe ô tô là phương tiện giao thông cá nhân",
-      wordType: "Danh từ",
-      category: "Phương tiện",
-      thumnail: "ảnh",
-      englishExample: ["Orange juice is delicious"],
-      vietnameseExample: ["Nước cam rất ngon"],
-    },
-  ]);
 
   const groupButton = [
     {
@@ -432,19 +467,19 @@ const ManageVocabulary = () => {
             <div>
               <select
                 required
-                id="role"
                 className="w-full h-[42px] border border-[#e4e6e8] rounded-[8px] px-5 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
                 value={idCategory}
                 onChange={handleSelectChange}
               >
                 <option value="">Danh mục</option>
-                {categories.map((category) => (
-                  <option key={category.idCategory} value={category.idCategory}>
+                {categorySelect.map((category) => (
+                  <option key={category.id} value={category.id}>
                     {category.nameCategory}
                   </option>
                 ))}
               </select>
             </div>
+
             <div>
               <Button
                 style={
@@ -492,7 +527,7 @@ const ManageVocabulary = () => {
           <Table
             title="Danh mục từ vựng"
             columns={column}
-            data={data}
+            data={dataDictionary}
             maxH={300}
             groupButton={groupButton}
           />
@@ -505,24 +540,21 @@ const ManageVocabulary = () => {
           >
             <div className="flex flex-col gap-3">
               <div>
-                <label
-                  htmlFor="category"
-                  className="block text-[15px] text-[#242938] leading-[20px] font-normal "
-                >
-                  Chọn danh mục
-                </label>
                 <select
                   required
-                  id="role"
-                  className="w-full h-[48px] border border-[#e4e6e8] rounded-[8px] px-4 mt-2 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
-                  value={nameCategory}
-                  onChange={(e) => setNameCategory(e.target.value)}
+                  className="w-full h-[42px] border border-[#e4e6e8] rounded-[8px] px-5 focus:outline-none focus:ring-1 focus:ring-[#d42525]"
+                  value={idCategory}
+                  onChange={handleSelectChange}
                 >
                   <option value="">Danh mục</option>
-                  <option value="Động vật">Động vật</option>
-                  <option value="Cây cối, hoa quả">Cây cối, hoa quả</option>
+                  {categorySelect.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.nameCategory}
+                    </option>
+                  ))}
                 </select>
               </div>
+
               <div>
                 <label
                   htmlFor=""

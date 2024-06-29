@@ -58,48 +58,56 @@ public class DictionaryController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateDictionary(@RequestBody DictionaryUpdatePayload payload) {
+    public ResponseEntity<?> updateDictionaries(@RequestBody List<DictionaryUpdatePayload> payloads) {
         try {
-            Dictionary updatedDictionary = payload.getDictionary();
-            Long id = updatedDictionary.getId();
+            List<Dictionary> updatedDictionaries = new ArrayList<>();
 
-            // Ensure the dictionary ID exists
-            Optional<Dictionary> existingDictionaryOptional = dictionaryService.getDictionaryById(id);
-            if (!existingDictionaryOptional.isPresent()) {
-                return ResponseEntity.notFound().build();
-            }
+            for (DictionaryUpdatePayload payload : payloads) {
+                Long id = payload.getId();
+                Optional<Dictionary> existingDictionaryOptional = dictionaryService.getDictionaryById(id);
 
-            Dictionary existingDictionary = existingDictionaryOptional.get();
+                if (!existingDictionaryOptional.isPresent()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dictionary with ID " + id + " not found.");
+                }
 
-            // Check if the category exists in the database before proceeding
-            Optional<Category> category = categoryRepository.findById(updatedDictionary.getCategory().getId());
-            if (!category.isPresent()) {
-                return ResponseEntity.badRequest().body("Category does not exist");
-            }
+                Dictionary existingDictionary = existingDictionaryOptional.get();
 
-            // Update fields from payload
-            existingDictionary.setVietnamese(updatedDictionary.getVietnamese());
-            existingDictionary.setEnglish(updatedDictionary.getEnglish());
-            existingDictionary.setPhoneticTranscription(updatedDictionary.getPhoneticTranscription());
-            existingDictionary.setExplanation(updatedDictionary.getExplanation());
-            existingDictionary.setWordType(updatedDictionary.getWordType());
-            existingDictionary.setThumbnail(updatedDictionary.getThumbnail());
-            existingDictionary.setCategory(updatedDictionary.getCategory());
+                // Check if the category exists in the database before proceeding
+                Optional<Category> category = categoryRepository.findById(payload.getCategory());
+                if (!category.isPresent()) {
+                    return ResponseEntity.badRequest().body("Category with ID " + payload.getCategory() + " does not exist");
+                }
 
-            // Save examples if provided
-            List<ExampleDictionary> examples = payload.getExamples();
-            if (examples != null && !examples.isEmpty()) {
+                // Update fields from payload
+                existingDictionary.setVietnamese(payload.getVietnamese());
+                existingDictionary.setEnglish(payload.getEnglish());
+                existingDictionary.setPhoneticTranscription(payload.getPhoneticTranscription());
+                existingDictionary.setExplanation(payload.getExplain());
+                existingDictionary.setWordType(payload.getWordType());
+                existingDictionary.setThumbnail(payload.getThumbnail());
+                existingDictionary.setCategory(category.get());
+
+                // Save or update examples
+                List<ExampleDictionary> examples = new ArrayList<>();
+                if (payload.getEnglishExample() != null && payload.getVietnameseExample() != null) {
+                    for (int i = 0; i < payload.getEnglishExample().size(); i++) {
+                        ExampleDictionary example = new ExampleDictionary();
+                        example.setExample(payload.getEnglishExample().get(i));
+                        example.setExampleTranslation(payload.getVietnameseExample().get(i));
+                        example.setDictionary(existingDictionary);
+                        examples.add(example);
+                    }
+                }
+
                 dictionaryService.saveOrUpdateDictionary(existingDictionary, examples);
-            } else {
-                dictionaryService.saveOrUpdateDictionary(existingDictionary, null);
+                updatedDictionaries.add(existingDictionary);
             }
 
-            return ResponseEntity.ok(existingDictionary);
+            return ResponseEntity.ok(updatedDictionaries);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error: " + e.getMessage());
         }
     }
-
     @GetMapping
     public ResponseEntity<List<Dictionary>> getAllDictionaries() {
         List<Dictionary> dictionaries = dictionaryService.getAllDictionaries();
@@ -129,7 +137,16 @@ class DictionaryPayload {
 @Getter
 @Setter
 class DictionaryUpdatePayload {
-    private Dictionary dictionary;
-    private List<ExampleDictionary> examples;
-}
+    private Long id;
+    private String english;
+    private String vietnamese;
+    private String phoneticTranscription;
+    private String explain;
+    private String wordType;
+    private Long category;
+    private String thumbnail;
+    private List<String> englishExample;
+    private List<String> vietnameseExample;
 
+    // Getters and setters
+}

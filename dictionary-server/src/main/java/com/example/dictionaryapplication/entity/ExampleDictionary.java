@@ -2,33 +2,27 @@ package com.example.dictionaryapplication.entity;
 
 import jakarta.persistence.*;
 
+
 @Entity
-@Table(name = "example_dictionaries")
+@Table(name = "examples")
 public class ExampleDictionary {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "example")
+    private String example;
+
+    @Column(name = "example_translation")
+    private String exampleTranslation;
+
     @ManyToOne
-    @JoinColumn(name = "dictionary_id", referencedColumnName = "id")
+    @JoinColumn(name = "dictionary_id")
     private Dictionary dictionary;
 
+    // Getters và Setters
 
-    @Column(name = "example_vietnamese")
-    private String exampleVietnamese;
-
-    @Column(name = "example_english")
-    private String exampleEnglish;
-
-    // Constructors
-    // Getters and setters
-    // ...
-
-    // Constructors
-    public ExampleDictionary() {
-    }
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -37,27 +31,27 @@ public class ExampleDictionary {
         this.id = id;
     }
 
+    public String getExample() {
+        return example;
+    }
+
+    public void setExample(String example) {
+        this.example = example;
+    }
+
+    public String getExampleTranslation() {
+        return exampleTranslation;
+    }
+
+    public void setExampleTranslation(String exampleTranslation) {
+        this.exampleTranslation = exampleTranslation;
+    }
+
     public Dictionary getDictionary() {
         return dictionary;
     }
 
     public void setDictionary(Dictionary dictionary) {
         this.dictionary = dictionary;
-    }
-
-    public String getExampleVietnamese() {
-        return exampleVietnamese;
-    }
-
-    public void setExampleVietnamese(String exampleVietnamese) {
-        this.exampleVietnamese = exampleVietnamese;
-    }
-
-    public String getExampleEnglish() {
-        return exampleEnglish;
-    }
-
-    public void setExampleEnglish(String exampleEnglish) {
-        this.exampleEnglish = exampleEnglish;
     }
 }

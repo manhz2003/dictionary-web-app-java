@@ -8,14 +8,14 @@ export const apiGetAllDictionary = () =>
 
 export const apiCreateDictionary = (data) =>
     axios({
-        url: "/dictionaries",
+        url: "/dictionaries/dictionary",
         method: "post",
         data,
 });
 
 export const apiUpdateDictionary = (data) =>
     axios({
-        url: "/dictionaries",
+        url: "/dictionaries/update",
         method: "put",
         data,
 });

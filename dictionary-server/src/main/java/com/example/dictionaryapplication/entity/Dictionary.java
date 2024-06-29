@@ -1,6 +1,8 @@
 package com.example.dictionaryapplication.entity;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "dictionaries")
 public class Dictionary {
@@ -29,6 +31,29 @@ public class Dictionary {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
+
+    @Transient
+    private List<String> englishExample;
+
+    @Transient
+    private List<String> vietnameseExample;
+
+    // Các getter và setter cho englishExample và vietnameseExample
+    public List<String> getEnglishExample() {
+        return englishExample;
+    }
+
+    public void setEnglishExample(List<String> englishExample) {
+        this.englishExample = englishExample;
+    }
+
+    public List<String> getVietnameseExample() {
+        return vietnameseExample;
+    }
+
+    public void setVietnameseExample(List<String> vietnameseExample) {
+        this.vietnameseExample = vietnameseExample;
+    }
 
     // Constructors
     public Dictionary() {

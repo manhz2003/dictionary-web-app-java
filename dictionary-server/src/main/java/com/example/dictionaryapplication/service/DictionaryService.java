@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +36,25 @@ public class DictionaryService {
         return savedDictionary;
     }
     public List<Dictionary> getAllDictionaries() {
-        return dictionaryRepository.findAll();
+        List<Dictionary> dictionaries = dictionaryRepository.findAll();
+
+        for (Dictionary dictionary : dictionaries) {
+            List<ExampleDictionary> examples = exampleDictionaryRepository.findByDictionaryId(dictionary.getId());
+            List<String> englishExamples = new ArrayList<>();
+            List<String> vietnameseExamples = new ArrayList<>();
+
+            for (ExampleDictionary example : examples) {
+                englishExamples.add(example.getExample());
+                vietnameseExamples.add(example.getExampleTranslation());
+            }
+
+            dictionary.setEnglishExample(englishExamples);
+            dictionary.setVietnameseExample(vietnameseExamples);
+        }
+
+        return dictionaries;
     }
+
 
     public Optional<Dictionary> getDictionaryById(Long id) {
         return dictionaryRepository.findById(id);

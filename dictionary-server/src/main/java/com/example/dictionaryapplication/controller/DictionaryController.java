@@ -119,6 +119,7 @@ public class DictionaryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error: " + e.getMessage());
         }
     }
+
     @GetMapping
     public ResponseEntity<List<Dictionary>> getAllDictionaries() {
         List<Dictionary> dictionaries = dictionaryService.getAllDictionaries();

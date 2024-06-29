@@ -7,13 +7,14 @@ import com.example.dictionaryapplication.entity.Category;
 import com.example.dictionaryapplication.repository.CategoryRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -127,8 +128,8 @@ public class DictionaryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Dictionary> getDictionaryById(@PathVariable Long id) {
-        Optional<Dictionary> dictionary = dictionaryService.getDictionaryById(id);
-        return dictionary.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Optional<Dictionary> dictionaryOptional = dictionaryService.getDictionaryById(id);
+        return dictionaryOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
@@ -162,6 +163,19 @@ public class DictionaryController {
         public long getTotalExplanationsCount() {
             return totalExplanationsCount;
         }
+    }
+
+    @GetMapping("/api/dictionaries/search-by-vietnamese")
+    public List<Dictionary> searchByVietnamese(
+            @RequestParam String vietnamese,
+            @PageableDefault(size = 10) Pageable pageable) {
+        return dictionaryService.searchByVietnamese(vietnamese, pageable);
+    }
+
+    @GetMapping("/search-by-category/{categoryId}")
+    public ResponseEntity<List<Dictionary>> searchByCategory(@PathVariable Long categoryId) {
+        List<Dictionary> dictionaries = dictionaryService.findByCategoryId(categoryId);
+        return ResponseEntity.ok(dictionaries);
     }
 
 }
@@ -198,10 +212,11 @@ class DictionaryUpdatePayload {
     // Getters and setters
 }
 
-@Setter
 @Getter
+@Setter
 class SearchRequest {
-    // Getter và Setter
-    private String keyword;
-
+    private String vietnamese;
+    private String english;
+    // Các thuộc tính và phương thức getters/setters khác
 }
+

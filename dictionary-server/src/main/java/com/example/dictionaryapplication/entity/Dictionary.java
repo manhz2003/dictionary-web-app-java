@@ -1,4 +1,5 @@
 package com.example.dictionaryapplication.entity;
+
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -19,13 +20,13 @@ public class Dictionary {
     @Column(name = "phonetic_transcription")
     private String phoneticTranscription;
 
-    @Column(name = "explanation")
+    @Column(name = "explanation", columnDefinition = "TEXT") // Thay đổi kiểu dữ liệu thành TEXT
     private String explanation;
 
     @Column(name = "word_type")
     private String wordType;
 
-    @Column(name = "thumbnail")
+    @Column(name = "thumbnail", columnDefinition = "TEXT")
     private String thumbnail;
 
     @ManyToOne

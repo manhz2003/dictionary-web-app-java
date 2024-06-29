@@ -12,6 +12,7 @@ public class Category {
     @Column(name = "`name_category`")
     private String nameCategory;
 
+    @Column(columnDefinition = "TEXT") // Thay đổi kiểu dữ liệu của thumbnail thành TEXT
     private String thumbnail;
 
     @Column(name = "`describe`")

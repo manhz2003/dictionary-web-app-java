@@ -4,6 +4,7 @@ import com.example.dictionaryapplication.entity.Dictionary;
 import com.example.dictionaryapplication.entity.ExampleDictionary;
 import com.example.dictionaryapplication.repository.DictionaryRepository;
 import com.example.dictionaryapplication.repository.ExampleDictionaryRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -57,9 +58,7 @@ public class DictionaryService {
         return dictionaries;
     }
 
-    public Optional<Dictionary> getDictionaryById(Long id) {
-        return dictionaryRepository.findById(id);
-    }
+
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteDictionary(Long id) {
@@ -79,5 +78,32 @@ public class DictionaryService {
         return dictionaryRepository.countByExplanationIsNotNull();
     }
 
+    public List<Dictionary> searchByVietnamese(String keyword, Pageable pageable) {
+        Page<Dictionary> pageResult = dictionaryRepository.findByVietnameseContainingIgnoreCase(keyword, (org.springframework.data.domain.Pageable) pageable);
+        return pageResult.getContent();
+    }
 
+    public List<Dictionary> findByCategoryId(Long categoryId) {
+        return dictionaryRepository.findByCategoryId(categoryId);
+    }
+
+    public Optional<Dictionary> getDictionaryById(Long id) {
+        Optional<Dictionary> dictionaryOptional = dictionaryRepository.findById(id);
+        dictionaryOptional.ifPresent(this::initializeExamples); // Gọi phương thức để initialize các ví dụ
+        return dictionaryOptional;
+    }
+
+    private void initializeExamples(Dictionary dictionary) {
+        List<ExampleDictionary> examples = exampleDictionaryRepository.findByDictionaryId(dictionary.getId());
+        List<String> englishExamples = new ArrayList<>();
+        List<String> vietnameseExamples = new ArrayList<>();
+
+        for (ExampleDictionary example : examples) {
+            englishExamples.add(example.getExample());
+            vietnameseExamples.add(example.getExampleTranslation());
+        }
+
+        dictionary.setEnglishExample(englishExamples);
+        dictionary.setVietnameseExample(vietnameseExamples);
+    }
 }

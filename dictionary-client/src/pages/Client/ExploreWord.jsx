@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Banner, BannerBottom } from "../../components/index";
 import icons from "../../ultils/icons";
+import { useNavigate } from "react-router-dom";
 import {
   apiGetAllCategory,
   apiGetTotalCategory,
@@ -13,6 +14,8 @@ const ExloreWord = () => {
   const [totalCategories, setTotalCategories] = useState(0);
   const [totalDictionary, setTotalDictionary] = useState(0);
   const [totalDescription, setTotalDescription] = useState(0);
+
+  const navigate = useNavigate();
 
   // Gọi API để lấy danh sách các danh mục
   useEffect(() => {
@@ -51,7 +54,7 @@ const ExloreWord = () => {
   }, []);
 
   const handleCategoryClick = (categoryId) => {
-    console.log("Category ID:", categoryId);
+    navigate(`/word-list?categoryId=${categoryId}`);
   };
 
   return (

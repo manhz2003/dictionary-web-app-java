@@ -20,6 +20,7 @@ public class User {
     private String phoneNumber;
     private String address;
     private String password;
+    @Column(columnDefinition = "TEXT") // Thay đổi kiểu dữ liệu thành TEXT
     private String avatar;
     private String refreshToken;
 

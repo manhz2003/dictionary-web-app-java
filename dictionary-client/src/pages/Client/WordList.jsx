@@ -1,36 +1,52 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Banner, BannerBottom } from "../../components/index";
 import icons from "../../ultils/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { apiGetDictionaryByIdCategory } from "../../apis";
 
 const {} = icons;
 
 const WordList = () => {
-  const fakeWords = Array(603).fill("Nhà môi trường học");
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [wordsPerPage] = React.useState(100);
+  const [words, setWords] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [wordsPerPage] = useState(100);
+  const [pageGroup, setPageGroup] = useState(1);
+  const pagesPerGroup = 6;
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const categoryId = searchParams.get("categoryId");
+    if (categoryId) {
+      apiGetDictionaryByIdCategory(categoryId)
+        .then((response) => {
+          setWords(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching words:", error);
+        });
+    }
+  }, [location.search]);
 
   const indexOfLastWord = currentPage * wordsPerPage;
   const indexOfFirstWord = indexOfLastWord - wordsPerPage;
-  const currentWords = fakeWords.slice(indexOfFirstWord, indexOfLastWord);
-
-  const [pageGroup, setPageGroup] = React.useState(1);
-  const pagesPerGroup = 6;
+  const currentWords = words.slice(indexOfFirstWord, indexOfLastWord);
 
   const totalPageGroups = Math.ceil(
-    fakeWords.length / wordsPerPage / pagesPerGroup
+    words.length / wordsPerPage / pagesPerGroup
   );
   const totalPageInCurrentGroup = Math.min(
     pagesPerGroup,
-    Math.ceil(fakeWords.length / wordsPerPage) - (pageGroup - 1) * pagesPerGroup
+    Math.ceil(words.length / wordsPerPage) - (pageGroup - 1) * pagesPerGroup
   );
-
-  const navigate = useNavigate();
 
   const paginate = (pageNumber) => {
     setCurrentPage((pageGroup - 1) * pagesPerGroup + pageNumber);
     navigate(`?page=${(pageGroup - 1) * pagesPerGroup + pageNumber}`);
   };
+
   const nextGroup = () => {
     setPageGroup(pageGroup + 1);
     setCurrentPage((pageGroup + 1) * pagesPerGroup + 1);
@@ -41,12 +57,14 @@ const WordList = () => {
     setCurrentPage((pageGroup - 1) * pagesPerGroup + 1);
   };
 
+  const handleWordClick = (id) => {
+    navigate(`/vocabulary-detail/${id}`);
+  };
+
   return (
     <>
       <div>
-        <div>
-          <Banner />
-        </div>
+        <Banner />
         <div className="w-full flex justify-center">
           <div className="w-[76%]">
             <div className="flex justify-center my-6 text-[32px] leading-[40px] text-[#242938] font-bold">
@@ -57,19 +75,20 @@ const WordList = () => {
                 <div
                   key={index}
                   className="flex cursor-pointer gap-3 items-center text-[#7c7f88] w-[240px]"
+                  onClick={() => handleWordClick(word.id)}
                 >
                   <span className="text-[18px] leading-[24px]">
                     {index + 1}:{" "}
                   </span>
                   <span className="text-[#2a61d4] text-[18px] leading-[28px]">
-                    <a href="">{word}</a>
+                    <a href="#">{word.vietnamese}</a>
                   </span>
                 </div>
               ))}
             </div>
             <div className="flex items-center justify-center gap-3 my-10">
               {pageGroup > 1 && <button onClick={previousGroup}>...</button>}
-              {[...Array(totalPageInCurrentGroup)].map((e, i) => (
+              {[...Array(totalPageInCurrentGroup)].map((_, i) => (
                 <button
                   className={`py-3 px-4 ${
                     currentPage === (pageGroup - 1) * pagesPerGroup + i + 1
@@ -88,9 +107,7 @@ const WordList = () => {
             </div>
           </div>
         </div>
-        <div>
-          <BannerBottom />
-        </div>
+        <BannerBottom />
       </div>
     </>
   );

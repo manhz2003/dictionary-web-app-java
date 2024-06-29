@@ -20,7 +20,6 @@ export const apiUpdateDictionary = (data) =>
         data,
 });
 
-
 export const apiDeleteDictionary = (id) =>
     axios({
         url: `/dictionaries/${id}`,
@@ -30,5 +29,17 @@ export const apiDeleteDictionary = (id) =>
 export const apiGetTotalDictionary = () =>
     axios({
         url: "/dictionaries/total-counts",
+        method: "get",
+});
+
+export const apiGetDictionaryByIdCategory = (id) =>
+    axios({
+        url: `dictionaries/search-by-category/${id}`,
+        method: "get",
+});
+
+export const apiGetDictionaryById = (id) =>
+    axios({
+        url: `dictionaries/${id}`,
         method: "get",
 });

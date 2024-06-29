@@ -1,11 +1,34 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Banner, BannerBottom } from "../../components/index";
 import icons from "../../ultils/icons";
 import image from "../../assets/images/image-detail.jpeg";
+import { apiGetDictionaryById } from "../../apis";
+import { useNavigate, useParams } from "react-router-dom";
 
 const { MdOutlineSpeakerNotes, IoIosArrowForward, FaRegStar, FaStar } = icons;
 
 const VocabularyDetail = () => {
+  const [word, setWord] = useState(null);
+  const { vocabularyId } = useParams();
+  const navigate = useNavigate();
+  const [categoryId, setCategoryId] = useState(null);
+
+  useEffect(() => {
+    const fetchWordDetail = async () => {
+      try {
+        const response = await apiGetDictionaryById(vocabularyId);
+        setCategoryId(response.data.category.id);
+        setWord(response.data);
+      } catch (error) {
+        console.error("Error fetching word:", error);
+      }
+    };
+
+    if (vocabularyId) {
+      fetchWordDetail();
+    }
+  }, [vocabularyId]);
+
   const [isFavourite, setIsFavourite] = useState(
     JSON.parse(localStorage.getItem("isFavourite")) || false
   );
@@ -17,6 +40,10 @@ const VocabularyDetail = () => {
   useEffect(() => {
     localStorage.setItem("isFavourite", JSON.stringify(isFavourite));
   }, [isFavourite]);
+
+  if (!word) {
+    return null;
+  }
 
   return (
     <div className="w-full flex flex-col justify-center items-center">
@@ -33,7 +60,6 @@ const VocabularyDetail = () => {
               <div className="text-[20px] text-[#242938] leading-[60px] font-semibold">
                 Đánh dấu từ yêu thích
               </div>
-
               <div className="cursor-pointer">
                 {isFavourite ? <FaStar color="#f0d002" /> : <FaRegStar />}
               </div>
@@ -42,13 +68,13 @@ const VocabularyDetail = () => {
               VIETNAMESE
             </div>
             <div className="text-[28px] text-[#242938] leading-[40px] font-semibold">
-              ăn quá nhiều
+              {word.vietnamese}
             </div>
           </div>
-          <div className=" rounded-[10px] w-[170px]">
+          <div className="rounded-[10px] w-[170px]">
             <img
               className="rounded-[10px] w-[170px]"
-              src={image}
+              src={word.thumbnail || image}
               alt="image detail"
             />
           </div>
@@ -59,21 +85,17 @@ const VocabularyDetail = () => {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-[28px] text-[#242938] leading-[40px] font-semibold">
-              overeat
+              {word.english}
             </div>
-            <div
-              className="font-semibold leading-[20px] text-[14px] text-[#2a61d4] flex justify-center items-center py-1 px-3 
-            border-solid border-[1px] border-[#2a61d4] rounded-[14px]"
-            >
-              VERB
+            <div className="font-semibold leading-[20px] text-[14px] text-[#2a61d4] flex justify-center items-center py-1 px-3 border-solid border-[1px] border-[#2a61d4] rounded-[14px]">
+              {word.wordType}
             </div>
           </div>
           <div className="text-[18px] leading-[28px] font-normal text-[#242938]">
-            /ˈoʊvəˌrit/
+            {word.phoneticTranscription}
           </div>
           <div className="text-[18px] leading-[28px] font-normal text-[#242938] mt-4">
-            Ăn quá là hành động ăn quá nhiều hoặc quá độ một loại thức ăn, gây
-            hại cho sức khỏe.
+            {word.explanation || "No explanation available"}
           </div>
         </div>
         <div className="bg-[#f8f6fd] p-5 rounded-[10px] mb-5 mt-10">
@@ -85,38 +107,34 @@ const VocabularyDetail = () => {
               Ví dụ
             </div>
           </div>
-
           <div className="mt-5">
-            <div className="mt-5 ml-3">
-              <div className="font-medium text-[18px] text-[#242938] leading-[28px]">
-                1. Tôi không muốn ăn quá nhiều vào buổi tối.
+            {word.vietnameseExample.map((example, index) => (
+              <div key={index} className="mt-5 ml-3">
+                <div className="font-medium text-[18px] text-[#242938] leading-[40px]">
+                  {index + 1}. {example}
+                </div>
+                <div className="text-[18px] text-[#41444b] leading-[40px] font-normal">
+                  {word.englishExample[index]}
+                </div>
               </div>
-              <div className="text-[18px] text-[#41444b] leading-[28px] font-normal">
-                I don't want to overeat at dinner.
-              </div>
-            </div>
-
-            <div className="mt-5 ml-3">
-              <div className="font-medium text-[18px] text-[#242938] leading-[28px]">
-                2. Ellen không muốn khách ăn quá nhiều tại bữa tiệc.
-              </div>
-              <div className="text-[18px] text-[#41444b] leading-[28px] font-normal">
-                Ellen don't want her guest to overeat at the party.
-              </div>
-            </div>
+            ))}
           </div>
         </div>
         <div className="mt-5 mb-10 font-normal leading-[20px] text-[14px] flex items-center gap-2">
           <span className="text-[#242938]">Danh sách từ mới nhất: </span>
-          <span className=" cursor-pointer text-[#2a61d4]">
+          <span
+            className="cursor-pointer text-[#2a61d4]"
+            onClick={() => {
+              navigate(`/word-list?categoryId=${categoryId}`);
+            }}
+          >
             Xem chi tiết
           </span>{" "}
-          <span className=" cursor-pointer">
+          <span className="cursor-pointer">
             <IoIosArrowForward color="#2a61d4" size="14px" />
           </span>
         </div>
       </div>
-
       <div className="bg-[#f9fafa] w-full h-[493px] flex items-center justify-center">
         <BannerBottom />
       </div>

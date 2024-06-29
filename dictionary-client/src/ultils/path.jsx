@@ -3,7 +3,7 @@ const path = {
   PROFILE: "profile",
   RIDDLE: "quizz",
   EXPLORE_WORD: "discover",
-  VOCABULARY_DETAIL: "vocabulary-detail",
+  VOCABULARY_DETAIL: "vocabulary-detail/:vocabularyId",
   WORD_LIST: "word-list",
   SEARCH_RESULT: "search-result",
 

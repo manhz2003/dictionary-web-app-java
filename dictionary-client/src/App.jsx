@@ -43,7 +43,7 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: path.VOCABULARY_DETAIL,
+        path: `${path.VOCABULARY_DETAIL}`,
         element: <VocabularyDetail />,
       },
       {

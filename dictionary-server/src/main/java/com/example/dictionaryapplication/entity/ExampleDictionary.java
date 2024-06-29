@@ -1,7 +1,5 @@
 package com.example.dictionaryapplication.entity;
-
 import jakarta.persistence.*;
-
 
 @Entity
 @Table(name = "examples")
@@ -20,8 +18,6 @@ public class ExampleDictionary {
     @ManyToOne
     @JoinColumn(name = "dictionary_id")
     private Dictionary dictionary;
-
-    // Getters và Setters
 
     public Long getId() {
         return id;

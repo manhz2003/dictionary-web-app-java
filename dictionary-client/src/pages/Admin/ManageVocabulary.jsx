@@ -143,7 +143,7 @@ const ManageVocabulary = () => {
     setEnglish(record.english);
     setVietnamese(record.vietnamese);
     setPhoneticTranscription(record.phoneticTranscription);
-    setExplain(record.explain);
+    setExplain(record.explanation);
     setWordType(record.wordType);
     setThumnail(record.thumbnail);
     setEnglishExample(
@@ -256,22 +256,15 @@ const ManageVocabulary = () => {
 
     const vocabularyCreate = [
       {
-        dictionary: {
-          english,
-          vietnamese,
-          phoneticTranscription,
-          explanation: explain,
-          wordType,
-          thumbnail: thumnail,
-        },
-
-        examples: [
-          {
-            exampleVietnamese: vietnameseExample,
-            exampleEnglish: englishExample,
-          },
-        ],
-        categoryId: +idCategory,
+        english,
+        vietnamese,
+        phoneticTranscription,
+        explain: explain,
+        wordType,
+        thumbnail: thumnail,
+        category: +idCategory,
+        vietnameseExample: vietnameseExample,
+        englishExample: englishExample,
       },
     ];
 
@@ -330,7 +323,7 @@ const ManageVocabulary = () => {
     },
     {
       title: "Giải thích",
-      key: "explain",
+      key: "explanation",
       sort: true,
     },
     {

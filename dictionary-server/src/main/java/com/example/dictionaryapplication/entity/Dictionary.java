@@ -1,7 +1,5 @@
 package com.example.dictionaryapplication.entity;
-
 import jakarta.persistence.*;
-
 
 @Entity
 @Table(name = "dictionaries")
@@ -19,8 +17,8 @@ public class Dictionary {
     @Column(name = "phonetic_transcription")
     private String phoneticTranscription;
 
-    @Column(name = "explanation") // Đổi tên cột này
-    private String explanation; // Đổi tên biến và tên phương thức setter
+    @Column(name = "explanation")
+    private String explanation;
 
     @Column(name = "word_type")
     private String wordType;
@@ -31,10 +29,6 @@ public class Dictionary {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
-
-    // Constructors
-    // Getters and setters
-    // ...
 
     // Constructors
     public Dictionary() {

@@ -2,11 +2,13 @@ package com.example.dictionaryapplication.controller;
 
 import com.example.dictionaryapplication.entity.Dictionary;
 import com.example.dictionaryapplication.entity.ExampleDictionary;
+import com.example.dictionaryapplication.repository.DictionaryRepository;
 import com.example.dictionaryapplication.service.DictionaryService;
 import com.example.dictionaryapplication.entity.Category;
 import com.example.dictionaryapplication.repository.CategoryRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,7 @@ public class DictionaryController {
     private final DictionaryService dictionaryService;
     private final CategoryRepository categoryRepository;
 
-    public DictionaryController(DictionaryService dictionaryService, CategoryRepository categoryRepository) {
+    public DictionaryController(DictionaryService dictionaryService, CategoryRepository categoryRepository, DictionaryRepository dictionaryRepository) {
         this.dictionaryService = dictionaryService;
         this.categoryRepository = categoryRepository;
     }
@@ -33,22 +35,31 @@ public class DictionaryController {
             List<Dictionary> savedDictionaries = new ArrayList<>();
 
             for (DictionaryPayload payload : payloads) {
-                Dictionary dictionary = payload.getDictionary();
+                Dictionary dictionary = new Dictionary();
+                dictionary.setEnglish(payload.getEnglish());
+                dictionary.setVietnamese(payload.getVietnamese());
+                dictionary.setPhoneticTranscription(payload.getPhoneticTranscription());
+                dictionary.setExplanation(payload.getExplain());
+                dictionary.setWordType(payload.getWordType());
+                dictionary.setThumbnail(payload.getThumbnail());
 
-                // Ensure the category is set correctly and exists
-                if (dictionary.getCategory() == null || dictionary.getCategory().getId() == null) {
-                    return ResponseEntity.badRequest().body("Category ID cannot be null");
-                }
-
-                // Check if the category exists in the database before proceeding
-                Optional<Category> category = categoryRepository.findById(dictionary.getCategory().getId());
+                Optional<Category> category = categoryRepository.findById(payload.getCategory());
                 if (!category.isPresent()) {
                     return ResponseEntity.badRequest().body("Category does not exist");
                 }
+                dictionary.setCategory(category.get());
 
-                List<ExampleDictionary> examples = payload.getExamples();
+                List<ExampleDictionary> examples = new ArrayList<>();
+                for (int i = 0; i < payload.getEnglishExample().size(); i++) {
+                    ExampleDictionary example = new ExampleDictionary();
+                    example.setExample(payload.getEnglishExample().get(i));
+                    example.setExampleTranslation(payload.getVietnameseExample().get(i));
+                    example.setDictionary(dictionary);
+                    examples.add(example);
+                }
+
                 Dictionary savedDictionary = dictionaryService.saveOrUpdateDictionary(dictionary, examples);
-                savedDictionaries.add(savedDictionary); // Add the saved dictionary to the list
+                savedDictionaries.add(savedDictionary);
             }
 
             return ResponseEntity.ok(savedDictionaries);
@@ -130,9 +141,17 @@ public class DictionaryController {
 @Getter
 @Setter
 class DictionaryPayload {
-    private Dictionary dictionary;
-    private List<ExampleDictionary> examples;
+    private String english;
+    private String vietnamese;
+    private String phoneticTranscription;
+    private String explain;
+    private String wordType;
+    private Long category;
+    private String thumbnail;
+    private List<String> englishExample;
+    private List<String> vietnameseExample;
 }
+
 
 @Getter
 @Setter

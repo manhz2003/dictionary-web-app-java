@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,11 +25,8 @@ public class DictionaryService {
 
     public Dictionary saveOrUpdateDictionary(Dictionary dictionary, List<ExampleDictionary> examples) {
         Dictionary savedDictionary = dictionaryRepository.save(dictionary);
-
-        // Xóa các ví dụ cũ liên quan đến từ điển này
         exampleDictionaryRepository.deleteByDictionaryId(savedDictionary.getId());
 
-        // Lưu các ví dụ mới
         for (ExampleDictionary example : examples) {
             example.setDictionary(savedDictionary);
             exampleDictionaryRepository.save(example);
@@ -48,9 +44,11 @@ public class DictionaryService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteDictionary(Long id) {
-        exampleDictionaryRepository.deleteByDictionaryId(id);
-        dictionaryRepository.deleteById(id);
+        try {
+            exampleDictionaryRepository.deleteByDictionaryId(id);
+            dictionaryRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete dictionary with id " + id, e);
+        }
     }
-
-
 }

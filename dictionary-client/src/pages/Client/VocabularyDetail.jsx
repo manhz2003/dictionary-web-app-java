@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const { MdOutlineSpeakerNotes, IoIosArrowForward, FaRegStar, FaStar } = icons;
 
 const VocabularyDetail = () => {
-  const [word, setWord] = useState(null);
+  const [word, setWord] = useState("");
   const { vocabularyId } = useParams();
   const navigate = useNavigate();
   const [categoryId, setCategoryId] = useState(null);

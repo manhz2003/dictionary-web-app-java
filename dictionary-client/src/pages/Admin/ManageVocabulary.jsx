@@ -84,6 +84,9 @@ const ManageVocabulary = () => {
   }, []);
 
   // select category
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // Cập nhật danh mục được chọn khi người dùng thay đổi lựa chọn
   const handleSelectChange = (e) => {
     const selectedId = e.target.value;
     const selectedCategory = categorySelect.find(
@@ -91,7 +94,15 @@ const ManageVocabulary = () => {
     );
     setIdCategory(selectedId);
     setNameCategory(selectedCategory?.nameCategory || "");
+
+    // Cập nhật danh mục được chọn
+    setSelectedCategory(selectedCategory);
   };
+
+  // Lọc dataDictionary dựa trên danh mục được chọn
+  const filteredDataDictionary = selectedCategory
+    ? dataDictionary.filter((word) => word.category.id === selectedCategory.id)
+    : dataDictionary;
 
   // xử lý xuất file excel
   async function exportToExcel(dataSelect) {
@@ -593,7 +604,7 @@ const ManageVocabulary = () => {
           <Table
             title="Danh mục từ vựng"
             columns={column}
-            data={dataDictionary}
+            data={filteredDataDictionary}
             maxH={300}
             groupButton={groupButton}
           />

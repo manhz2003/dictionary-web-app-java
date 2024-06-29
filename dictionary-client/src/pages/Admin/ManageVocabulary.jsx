@@ -93,7 +93,7 @@ const ManageVocabulary = () => {
     setNameCategory(selectedCategory?.nameCategory || "");
   };
 
-  // xủ lý xuất file excel
+  // xử lý xuất file excel
   async function exportToExcel(dataSelect) {
     let workbook = new ExcelJS.Workbook();
     let worksheet = workbook.addWorksheet("dictionary");
@@ -228,42 +228,63 @@ const ManageVocabulary = () => {
   // Xử lý import từ điển
   const handleImportButtonClick = () => {
     if (dataImport) {
-      toast.success("Import thành công");
-      setShowModal(false);
-      setFileName(null);
-      setDataPreview([]);
+      apiCreateDictionary(dataImport)
+        .then((response) => {
+          if (response.status === 200) {
+            toast.success("Import thành công");
+            setShowModal(false);
+            setFileName(null);
+            setDataPreview([]);
+            reloadDictionary();
+          }
+        })
+        .catch((error) => {
+          toast.error("Import thất bại");
+        });
     }
   };
 
-  // xem trước dữ liệu import
+  // Xử lý xem trước dữ liệu import
   const handlePreviewData = useCallback(
     (fileValue) => {
       readFileDataImport(fileValue)
         .then((dataMain) => {
           const dataFormat = Array.isArray(dataMain.dataMain)
-            ? dataMain.dataMain.map((data) => {
-                return {
-                  no: data["STT"],
-                  vietnamese: data["Tiếng việt"],
-                  phoneticTranscription: String(data["Phiên âm"]),
-                  english: data["Tiếng Anh"],
-                  wordType: data["Loại từ"],
-                  englishExample: [data["Đặt câu"]],
-                  vietnameseExample: [data["Dịch nghĩa câu"]],
-                  explain: data["Giải nghĩa từ"],
-                  thumnail: data["link ảnh"],
-                  category: nameCategory,
-                };
-              })
+            ? dataMain.dataMain.map((data) => ({
+                english: data["Tiếng Anh"],
+                vietnamese: data["Tiếng việt"],
+                phoneticTranscription: String(data["Phiên âm"]),
+                explanation: data["Giải nghĩa từ"].substring(0, 255),
+                wordType: data["Loại từ"],
+                thumbnail: data["link ảnh"],
+                englishExample: [data["Đặt câu"]],
+                vietnameseExample: [data["Dịch nghĩa câu"]],
+                category: { nameCategory: nameCategory },
+              }))
             : [];
 
-          const dataImport = dataFormat.map(({ no, ...rest }) => ({
-            ...rest,
-            category: idCategory,
+          const dataImport = dataFormat.map((item) => ({
+            ...item,
+            category: +idCategory,
           }));
 
           setDataPreview(dataFormat);
-          setDataImport(dataImport);
+
+          // Convert dataImport to the desired format
+          const convertedData = dataImport.map((item) => ({
+            english: item.english,
+            vietnamese: item.vietnamese,
+            phoneticTranscription: item.phoneticTranscription,
+            explanation: item.explanation,
+            wordType: item.wordType,
+            thumbnail: item.thumbnail,
+            englishExample: item.englishExample,
+            vietnameseExample: item.vietnameseExample,
+            category: item.category,
+          }));
+
+          console.log(convertedData);
+          setDataImport(convertedData);
         })
         .catch((error) => {
           toast.error("File không đúng định dạng !");

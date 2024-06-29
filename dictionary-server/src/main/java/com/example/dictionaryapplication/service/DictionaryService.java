@@ -4,10 +4,12 @@ import com.example.dictionaryapplication.entity.Dictionary;
 import com.example.dictionaryapplication.entity.ExampleDictionary;
 import com.example.dictionaryapplication.repository.DictionaryRepository;
 import com.example.dictionaryapplication.repository.ExampleDictionaryRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +57,6 @@ public class DictionaryService {
         return dictionaries;
     }
 
-
     public Optional<Dictionary> getDictionaryById(Long id) {
         return dictionaryRepository.findById(id);
     }
@@ -69,4 +70,14 @@ public class DictionaryService {
             throw new RuntimeException("Failed to delete dictionary with id " + id, e);
         }
     }
+
+    public long getTotalVietnameseCount() {
+        return dictionaryRepository.countByVietnameseIsNotNull();
+    }
+
+    public long getTotalExplanationsCount() {
+        return dictionaryRepository.countByExplanationIsNotNull();
+    }
+
+
 }

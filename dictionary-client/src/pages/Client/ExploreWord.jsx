@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Banner, BannerBottom } from "../../components/index";
 import icons from "../../ultils/icons";
-import { apiGetAllCategory, apiGetTotalCategory } from "../../apis";
+import {
+  apiGetAllCategory,
+  apiGetTotalCategory,
+  apiGetTotalDictionary,
+} from "../../apis";
 const {} = icons;
 
 const ExloreWord = () => {
   const [categories, setCategories] = useState([]);
   const [totalCategories, setTotalCategories] = useState(0);
+  const [totalDictionary, setTotalDictionary] = useState(0);
+  const [totalDescription, setTotalDescription] = useState(0);
 
   // Gọi API để lấy danh sách các danh mục
   useEffect(() => {
@@ -27,6 +33,20 @@ const ExloreWord = () => {
       })
       .catch((error) => {
         console.error("Error fetching total categories:", error);
+      });
+  }, []);
+
+  // call api lấy tổng số từ vựng và mô tả
+  useEffect(() => {
+    apiGetTotalDictionary()
+      .then((response) => {
+        if (response.status === 200) {
+          setTotalDescription(response.data.totalExplanationsCount);
+          setTotalDictionary(response.data.totalVietnameseCount);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch category count: ", error);
       });
   }, []);
 
@@ -88,10 +108,10 @@ const ExloreWord = () => {
 
             <div className="flex flex-col gap-3 justify-center items-center">
               <div className="text-[28px] font-semibold text-[#fff] leading-[36px]">
-                23.940
+                {totalDictionary}
               </div>
               <div className="text-[14px] text-[#d3e0ec] leading-[20px] font-medium">
-                Ví dụ
+                Từ vựng
               </div>
             </div>
 
@@ -99,7 +119,7 @@ const ExloreWord = () => {
 
             <div className="flex flex-col gap-3 justify-center items-center">
               <div className="text-[28px] font-semibold text-[#fff] leading-[36px]">
-                23.940
+                {totalDescription}
               </div>
               <div className="text-[14px] text-[#d3e0ec] leading-[20px] font-medium">
                 Mô tả

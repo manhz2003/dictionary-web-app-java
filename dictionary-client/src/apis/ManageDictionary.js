@@ -26,3 +26,9 @@ export const apiDeleteDictionary = (id) =>
         url: `/dictionaries/${id}`,
         method: "delete",
 });
+
+export const apiGetTotalDictionary = () =>
+    axios({
+        url: "/dictionaries/total-counts",
+        method: "get",
+});

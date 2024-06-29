@@ -1,5 +1,4 @@
 package com.example.dictionaryapplication.controller;
-
 import com.example.dictionaryapplication.entity.Dictionary;
 import com.example.dictionaryapplication.entity.ExampleDictionary;
 import com.example.dictionaryapplication.repository.DictionaryRepository;
@@ -8,13 +7,13 @@ import com.example.dictionaryapplication.entity.Category;
 import com.example.dictionaryapplication.repository.CategoryRepository;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -137,6 +136,34 @@ public class DictionaryController {
         dictionaryService.deleteDictionary(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/total-counts")
+    public ResponseEntity<TotalCountsResponse> getTotalCounts() {
+        long totalVietnameseCount = dictionaryService.getTotalVietnameseCount();
+        long totalExplanationsCount = dictionaryService.getTotalExplanationsCount();
+
+        TotalCountsResponse countsResponse = new TotalCountsResponse(totalVietnameseCount, totalExplanationsCount);
+        return ResponseEntity.ok(countsResponse);
+    }
+
+    static class TotalCountsResponse {
+        private final long totalVietnameseCount;
+        private final long totalExplanationsCount;
+
+        public TotalCountsResponse(long totalVietnameseCount, long totalExplanationsCount) {
+            this.totalVietnameseCount = totalVietnameseCount;
+            this.totalExplanationsCount = totalExplanationsCount;
+        }
+
+        public long getTotalVietnameseCount() {
+            return totalVietnameseCount;
+        }
+
+        public long getTotalExplanationsCount() {
+            return totalExplanationsCount;
+        }
+    }
+
 }
 
 @Getter
@@ -169,4 +196,12 @@ class DictionaryUpdatePayload {
     private List<String> vietnameseExample;
 
     // Getters and setters
+}
+
+@Setter
+@Getter
+class SearchRequest {
+    // Getter và Setter
+    private String keyword;
+
 }

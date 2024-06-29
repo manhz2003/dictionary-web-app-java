@@ -12,6 +12,7 @@ import {
   apiUpdateUserById,
   apiCreateUserById,
   apiGetTotalCategory,
+  apiGetTotalDictionary,
 } from "../../apis";
 const {
   IoIosCreate,
@@ -37,13 +38,13 @@ const DashBoard = () => {
   const [userCount, setUserCount] = useState(0);
   const [vocabCount, setVocabCount] = useState(0);
   const [exampleCount, setExampleCount] = useState(0);
-  const [descCount, setDescCount] = useState(0);
   const [roles, setRoles] = useState([]);
   const [userLimit, setUserLimit] = useState([]);
   const [categoryLimit, setCategoryLimit] = useState([]);
   const [userId, setUserId] = useState(null);
   const [categoryCount, setCategoryCount] = useState(0);
-
+  const [vocabLimit, setVocabLimit] = useState([]);
+  const [explanationLimit, setExplanationLimit] = useState([]);
   const [users, setUsers] = useState([]);
 
   // call api lấy tổng số user
@@ -69,6 +70,20 @@ const DashBoard = () => {
       })
       .catch((error) => {
         console.error("Failed to fetch category count: ", error);
+      });
+  }, []);
+
+  // call api lấy tổng số từ vựng
+  useEffect(() => {
+    apiGetTotalDictionary()
+      .then((response) => {
+        if (response.status === 200) {
+          setExplanationLimit(response.data.totalVietnameseCount);
+          setVocabLimit(response.data.totalExplanationsCount);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch vocab count: ", error);
       });
   }, []);
 
@@ -124,11 +139,10 @@ const DashBoard = () => {
     };
 
     incrementCount(setUserCount, userLimit);
-    incrementCount(setVocabCount, 1000);
-    incrementCount(setExampleCount, 1000);
-    incrementCount(setDescCount, 1000);
+    incrementCount(setVocabCount, vocabLimit);
+    incrementCount(setExampleCount, explanationLimit);
     incrementCount(setCategoryCount, categoryLimit);
-  }, [userLimit, categoryLimit]);
+  }, [userLimit, categoryLimit, vocabLimit, explanationLimit]);
 
   const handleSubmit = async () => {
     if (!fullName || !address || !phoneNumber || !email || !nameRole) {
@@ -404,7 +418,7 @@ const DashBoard = () => {
             </div>
             <div className="flex flex-col gap-3 w-[50%]">
               <div className=" text-[30px] font-bold leading-[22px]">
-                {vocabCount}
+                {exampleCount}
               </div>
               <div className="font-semibold leading-[22px]">Từ vựng</div>
             </div>
@@ -416,7 +430,7 @@ const DashBoard = () => {
             </div>
             <div className="flex flex-col gap-3 w-[50%]">
               <div className=" text-[30px] font-bold leading-[22px]">
-                {descCount}
+                {vocabCount}
               </div>
               <div className="font-semibold leading-[22px]">Mô tả</div>
             </div>

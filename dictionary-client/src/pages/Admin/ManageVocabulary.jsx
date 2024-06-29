@@ -93,6 +93,58 @@ const ManageVocabulary = () => {
     setNameCategory(selectedCategory?.nameCategory || "");
   };
 
+  // xủ lý xuất file excel
+  async function exportToExcel(dataSelect) {
+    let workbook = new ExcelJS.Workbook();
+    let worksheet = workbook.addWorksheet("dictionary");
+
+    worksheet.columns = [
+      { header: "No", key: "no", width: 10 },
+      { header: "english", key: "english", width: 40 },
+      { header: "vietnamese", key: "vietnamese", width: 40 },
+      { header: "explanation", key: "explanation", width: 40 },
+      { header: "wordType", key: "wordType", width: 40 },
+      { header: "category", key: "category", width: 40 },
+      {
+        header: "phoneticTranscription",
+        key: "phoneticTranscription",
+        width: 40,
+      },
+      { header: "englishExample", key: "englishExample", width: 40 },
+      { header: "vietnameseExample", key: "vietnameseExample", width: 40 },
+      { header: "thumbnail", key: "thumbnail", width: 40 },
+    ];
+
+    dataSelect?.forEach((value, index) => {
+      worksheet.addRow({
+        no: index + 1,
+        english: value.english,
+        vietnamese: value.vietnamese,
+        explanation: value.explanation,
+        wordType: value.wordType,
+        category: value.category.nameCategory,
+        phoneticTranscription: value.phoneticTranscription,
+        englishExample: value.englishExample.join(", "),
+        vietnameseExample: value.vietnameseExample.join(", "),
+        thumbnail: value.thumbnail,
+      });
+    });
+
+    let buffer = await workbook.xlsx.writeBuffer();
+    let blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "dictionary.xlsx");
+  }
+
+  const handleExportClick = async () => {
+    if (Array.isArray(dataDictionary) && dataDictionary.length > 0) {
+      await exportToExcel(dataDictionary);
+    } else {
+      toast.error("Không có dữ liệu để xuất file");
+    }
+  };
+
   const handleAddEnglish = () => {
     setEnglishExample([...englishExample, ""]);
   };
@@ -509,7 +561,7 @@ const ManageVocabulary = () => {
                   "bg-[#d42525] text-[#fff] py-3 text-[16px] flex item-center gap-2"
                 }
                 icon={<CiExport />}
-                handleOnclick={() => {}}
+                handleOnclick={handleExportClick}
               >
                 Export
               </Button>

@@ -13,6 +13,12 @@ const VocabularyDetail = () => {
   const navigate = useNavigate();
   const [categoryId, setCategoryId] = useState(null);
 
+  const [favourites, setFavourites] = useState(
+    JSON.parse(localStorage.getItem("favourites")) || []
+  );
+
+  const isFavourite = favourites.some((fav) => fav.id === word.id);
+
   useEffect(() => {
     const fetchWordDetail = async () => {
       try {
@@ -29,17 +35,17 @@ const VocabularyDetail = () => {
     }
   }, [vocabularyId]);
 
-  const [isFavourite, setIsFavourite] = useState(
-    JSON.parse(localStorage.getItem("isFavourite")) || false
-  );
-
   const handleClick = () => {
-    setIsFavourite(!isFavourite);
+    let updatedFavourites;
+    if (isFavourite) {
+      updatedFavourites = favourites.filter((fav) => fav.id !== word.id);
+    } else {
+      updatedFavourites = [...favourites, word];
+    }
+    setFavourites(updatedFavourites);
+    localStorage.setItem("favourites", JSON.stringify(updatedFavourites));
+    console.log("Favourites:", updatedFavourites);
   };
-
-  useEffect(() => {
-    localStorage.setItem("isFavourite", JSON.stringify(isFavourite));
-  }, [isFavourite]);
 
   if (!word) {
     return null;

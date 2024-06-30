@@ -100,21 +100,24 @@ const Profile = () => {
       });
   };
 
-  const fakeWords = Array(403).fill("Nhà môi trường học");
+  const storedData = JSON.parse(localStorage.getItem("favourites")) || [];
   const [currentPage, setCurrentPage] = React.useState(1);
   const [wordsPerPage] = React.useState(20);
   const indexOfLastWord = currentPage * wordsPerPage;
   const indexOfFirstWord = indexOfLastWord - wordsPerPage;
-  const currentWords = fakeWords.slice(indexOfFirstWord, indexOfLastWord);
+  const currentWords = storedData.slice(indexOfFirstWord, indexOfLastWord);
   const [pageGroup, setPageGroup] = React.useState(1);
   const pagesPerGroup = 6;
 
+  console.log("storedData", storedData);
+
   const totalPageGroups = Math.ceil(
-    fakeWords.length / wordsPerPage / pagesPerGroup
+    storedData.length / wordsPerPage / pagesPerGroup
   );
   const totalPageInCurrentGroup = Math.min(
     pagesPerGroup,
-    Math.ceil(fakeWords.length / wordsPerPage) - (pageGroup - 1) * pagesPerGroup
+    Math.ceil(storedData.length / wordsPerPage) -
+      (pageGroup - 1) * pagesPerGroup
   );
   const paginate = (pageNumber) => {
     setCurrentPage((pageGroup - 1) * pagesPerGroup + pageNumber);
@@ -298,12 +301,13 @@ const Profile = () => {
                     <div
                       key={index}
                       className="flex cursor-pointer gap-3 items-center text-[#7c7f88] w-[240px]"
+                      onClick={() => navigate(`/vocabulary-detail/${word.id}`)}
                     >
                       <span className="text-[18px] leading-[24px]">
                         {index + 1}:{" "}
                       </span>
                       <span className="text-[#2a61d4] text-[18px] leading-[28px]">
-                        <a href="">{word}</a>
+                        <a href="#">{word.vietnamese}</a>
                       </span>
                     </div>
                   ))}

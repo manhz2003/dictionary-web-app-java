@@ -1,10 +1,12 @@
 import { useState } from "react";
 import icons from "../../ultils/icons";
+import { useNavigate } from "react-router-dom";
 const { CiSearch, FaXmark } = icons;
 
 const Search = ({ width }) => {
   const [inputValue, setInputValue] = useState("");
   const inputWidth = typeof width === "number" ? `${width}px` : width;
+  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -12,6 +14,13 @@ const Search = ({ width }) => {
 
   const handleClearInput = () => {
     setInputValue("");
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      localStorage.setItem("searchQuery", inputValue);
+      navigate(`/search-result`);
+    }
   };
 
   return (
@@ -25,6 +34,7 @@ const Search = ({ width }) => {
         placeholder="Nhập từ bạn cần tìm ?"
         value={inputValue}
         onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
       />
       {inputValue && (
         <div

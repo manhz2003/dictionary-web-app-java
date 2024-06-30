@@ -43,3 +43,9 @@ export const apiGetDictionaryById = (id) =>
         url: `dictionaries/${id}`,
         method: "get",
 });
+
+export const apiSearchListDictionaryVietnamese = (keyword, page, size) =>
+    axios({
+        url: `dictionaries/search?keyword=${keyword}&page=${page}&size=${size}`,
+        method: "get",
+});

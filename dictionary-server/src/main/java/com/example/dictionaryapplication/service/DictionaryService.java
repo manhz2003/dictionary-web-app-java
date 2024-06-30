@@ -78,9 +78,9 @@ public class DictionaryService {
         return dictionaryRepository.countByExplanationIsNotNull();
     }
 
-    public List<Dictionary> searchByVietnamese(String keyword, Pageable pageable) {
-        Page<Dictionary> pageResult = dictionaryRepository.findByVietnameseContainingIgnoreCase(keyword, (org.springframework.data.domain.Pageable) pageable);
-        return pageResult.getContent();
+    public List<Dictionary> searchByVietnamese(String keyword, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        return dictionaryRepository.findByVietnameseContaining(keyword, pageable);
     }
 
     public List<Dictionary> findByCategoryId(Long categoryId) {

@@ -165,11 +165,11 @@ public class DictionaryController {
         }
     }
 
-    @GetMapping("/api/dictionaries/search-by-vietnamese")
-    public List<Dictionary> searchByVietnamese(
-            @RequestParam String vietnamese,
-            @PageableDefault(size = 10) Pageable pageable) {
-        return dictionaryService.searchByVietnamese(vietnamese, pageable);
+    @GetMapping("/search")
+    public List<Dictionary> searchByVietnamese(@RequestParam("keyword") String keyword,
+                                               @RequestParam(value = "page", defaultValue = "0") int page,
+                                               @RequestParam(value = "size", defaultValue = "10") int size) {
+        return dictionaryService.searchByVietnamese(keyword, page, size);
     }
 
     @GetMapping("/search-by-category/{categoryId}")

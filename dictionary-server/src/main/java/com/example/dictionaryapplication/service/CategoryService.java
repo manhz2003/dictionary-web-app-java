@@ -1,8 +1,14 @@
 package com.example.dictionaryapplication.service;
 
 import com.example.dictionaryapplication.entity.Category;
+import com.example.dictionaryapplication.entity.Dictionary;
+import com.example.dictionaryapplication.entity.ExampleDictionary;
 import com.example.dictionaryapplication.exception.ResourceNotFoundException;
 import com.example.dictionaryapplication.repository.CategoryRepository;
+import com.example.dictionaryapplication.repository.DictionaryRepository;
+import com.example.dictionaryapplication.repository.ExampleDictionaryRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +18,14 @@ import java.util.Optional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final DictionaryRepository dictionaryRepository;
+    private final ExampleDictionaryRepository exampleRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, DictionaryRepository dictionaryRepository, ExampleDictionaryRepository exampleRepository) {
         this.categoryRepository = categoryRepository;
+
+        this.dictionaryRepository = dictionaryRepository;
+        this.exampleRepository = exampleRepository;
     }
 
     public List<Category> getAllCategories() {
@@ -40,12 +51,27 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    @Transactional
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
+        // Delete all dictionaries associated with this category
+        List<Dictionary> dictionaries = dictionaryRepository.findByCategoryId(id);
+        for (Dictionary dictionary : dictionaries) {
+            // Delete all examples associated with this dictionary
+            List<ExampleDictionary> examples = exampleRepository.findByDictionaryId(dictionary.getId());
+            for (ExampleDictionary example : examples) {
+                exampleRepository.delete(example);
+            }
+            // Delete the dictionary itself
+            dictionaryRepository.delete(dictionary);
+        }
+
+        // Delete the category
         categoryRepository.delete(category);
     }
+
 
     public long countCategories() {
         return categoryRepository.count();

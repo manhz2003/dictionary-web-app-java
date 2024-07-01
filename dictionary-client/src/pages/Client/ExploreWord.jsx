@@ -67,29 +67,37 @@ const ExloreWord = () => {
       </div>
 
       <div className="w-full flex justify-center items-center mt-12 gap-8 flex-wrap">
-        {categories.map((category) => (
-          <div
-            key={category.id}
-            className="bg-[#f5f8f9] rounded-[12px] p-5 w-[342px] flex gap-4 items-center cursor-pointer"
-            onClick={() => handleCategoryClick(category.id)}
-          >
-            <div className="rounded-[10px] w-[90px] h-[90px]">
-              <img
-                className="rounded-[10px] w-[90px] h-[90px]"
-                src={category.thumbnail}
-                alt={category.nameCategory}
-              />
-            </div>
-            <div>
-              <div className="font-bold text-[18px] text-[#242938] leading-[28px]">
-                {category.nameCategory}
+        {categories.map((category) => {
+          const words = category.description.split(" ");
+          const displayDescription =
+            words.length > 10
+              ? `${words.slice(0, 10).join(" ")}...`
+              : category.description;
+
+          return (
+            <div
+              key={category.id}
+              className="bg-[#f5f8f9] rounded-[12px] p-5 w-[390px] flex gap-4 items-center cursor-pointer"
+              onClick={() => handleCategoryClick(category.id)}
+            >
+              <div className="rounded-[10px] w-[100px] h-[100px]">
+                <img
+                  className="rounded-[10px] w-[100px] h-[100px]"
+                  src={category.thumbnail}
+                  alt={category.nameCategory}
+                />
               </div>
-              <div className="font-normal text-[18px] text-[#90939b] leading-[28px]">
-                {category.description}
+              <div className="w-[250px]">
+                <div className="font-bold text-[18px] text-[#242938] leading-[28px]">
+                  {category.nameCategory}
+                </div>
+                <div className="font-normal text-[18px] text-[#90939b] leading-[28px]">
+                  {displayDescription}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="h-[280px] bg-custom3 bg-zoom-large mt-20 w-[102%] flex items-center justify-center">

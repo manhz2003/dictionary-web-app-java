@@ -2,6 +2,8 @@ package com.example.dictionaryapplication.controller;
 
 import com.example.dictionaryapplication.entity.Category;
 import com.example.dictionaryapplication.service.CategoryService;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,8 +44,16 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        try {
+            categoryService.deleteCategory(id);
+            return ResponseEntity.noContent().build();
+        } catch (DataIntegrityViolationException e) {
+            // Handle specific exception for data integrity violation
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // Conflict status code (409) could be appropriate
+        } catch (RuntimeException e) {
+            // Handle other runtime exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Generic internal server error
+        }
     }
 
     @GetMapping("/count")

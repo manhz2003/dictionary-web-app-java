@@ -1,5 +1,6 @@
 package com.example.dictionaryapplication.repository;
 
+import com.example.dictionaryapplication.entity.Category;
 import com.example.dictionaryapplication.entity.Dictionary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,9 @@ public interface DictionaryRepository extends JpaRepository<Dictionary, Long> {
     long countByExplanationIsNotNull();
 
     Page<Dictionary> findByVietnameseContainingIgnoreCase(String keyword, Pageable pageable);
+    @Transactional
     List<Dictionary> findByCategoryId(Long categoryId);
     @Query("SELECT d FROM Dictionary d WHERE d.vietnamese LIKE %:keyword%")
     List<Dictionary> findByVietnameseContaining(@Param("keyword") String keyword, Pageable pageable);
+
 }

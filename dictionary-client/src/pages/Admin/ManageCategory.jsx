@@ -55,13 +55,27 @@ const ManageCategory = () => {
   const handleDelete = async (record) => {
     try {
       const response = await apiDeleteCategory(record.id);
-      if (response.status === 200) {
+      if (response.status === 204) {
         toast.success("Xóa danh mục thành công");
         reloadCategory();
+      } else {
+        toast.error("Xóa danh mục thất bại: Lỗi không xác định");
       }
     } catch (error) {
-      console.error("Failed to delete category: ", error);
-      toast.error("Xóa danh mục thất bại");
+      if (error.response) {
+        if (error.response.status === 409) {
+          toast.error(
+            "Xóa danh mục thất bại: Danh mục đang có từ điển liên quan"
+          );
+        } else if (error.response.status === 500) {
+          toast.error("Xóa danh mục thất bại: Lỗi máy chủ nội bộ");
+        } else {
+          toast.error("Xóa danh mục thất bại: Lỗi không xác định");
+        }
+      } else {
+        console.error("Failed to delete category: ", error);
+        toast.error("Xóa danh mục thất bại: Lỗi không xác định");
+      }
     }
   };
 

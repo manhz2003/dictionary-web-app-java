@@ -109,8 +109,6 @@ const Profile = () => {
   const [pageGroup, setPageGroup] = React.useState(1);
   const pagesPerGroup = 6;
 
-  console.log("storedData", storedData);
-
   const totalPageGroups = Math.ceil(
     storedData.length / wordsPerPage / pagesPerGroup
   );

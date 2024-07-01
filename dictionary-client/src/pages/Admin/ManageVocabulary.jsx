@@ -42,9 +42,10 @@ const ManageVocabulary = () => {
   const [englishExample, setEnglishExample] = useState([""]);
   const [vietnameseExample, setVietnameseExample] = useState([""]);
   const [idCategory, setIdCategory] = useState("");
-  const [dataDictionary, setDataDictionary] = useState("");
+  const [dataDictionary, setDataDictionary] = useState([]);
   const [categorySelect, setCategorySelect] = useState([]);
   const [idVocabulary, setIdVocabulary] = useState("");
+  const [valueSearch, setValueSearch] = useState("");
 
   // call api hiển thị data dictionary
   useEffect(() => {
@@ -101,8 +102,10 @@ const ManageVocabulary = () => {
 
   // Lọc dataDictionary dựa trên danh mục được chọn
   const filteredDataDictionary = selectedCategory
-    ? dataDictionary.filter((word) => word.category.id === selectedCategory.id)
-    : dataDictionary;
+    ? dataDictionary?.filter((word) => word.category.id === selectedCategory.id)
+    : dataDictionary || [];
+
+  console.log(filteredDataDictionary);
 
   // xử lý xuất file excel
   async function exportToExcel(dataSelect) {
@@ -384,6 +387,13 @@ const ManageVocabulary = () => {
     }
   };
 
+  const handleSearch = (searchValue) => {
+    const filtered = dataDictionary.filter((item) =>
+      item.vietnamese.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilteredData(filtered); // set the filtered data
+  };
+
   const column = [
     {
       title: "No",
@@ -495,6 +505,7 @@ const ManageVocabulary = () => {
             placeholder="Tìm kiếm ..."
             onChange={(e) => {
               setClearSearch(e.target.value);
+              handleSearch(e.target.value);
             }}
             value={clearSearch}
           />
@@ -602,11 +613,14 @@ const ManageVocabulary = () => {
         </div>
         <div className="mt-10 border-t-2 border-gray-100 drop-shadow">
           <Table
-            title="Danh mục từ vựng"
+            title="Danh sách từ vựng"
             columns={column}
-            data={filteredDataDictionary}
-            maxH={300}
-            groupButton={groupButton}
+            data={filteredDataDictionary?.filter((item) =>
+              item.vietnamese.toLowerCase().includes(valueSearch.toLowerCase())
+            )}
+            // groupButton={groupButton}
+            valueSearch={valueSearch}
+            handleSearch={handleSearch}
           />
         </div>
         {showDes && (

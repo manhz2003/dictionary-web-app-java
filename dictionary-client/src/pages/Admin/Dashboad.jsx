@@ -469,7 +469,13 @@ const DashBoard = () => {
         <Table
           title="Quản lý user"
           columns={column}
-          data={users}
+          data={users.filter((user) =>
+            Object.values(user).some(
+              (val) =>
+                typeof val === "string" &&
+                val.toLowerCase().includes(valueSearch.toLowerCase())
+            )
+          )}
           maxH={300}
           groupButton={groupButton}
           valueSearch={valueSearch}

@@ -233,6 +233,12 @@ const ManageCategory = () => {
     },
   ];
 
+  const [valueSearch, setValueSearch] = useState("");
+
+  const handleSearch = (searchTerm) => {
+    setValueSearch(searchTerm);
+  };
+
   const groupButton = [
     {
       id: 1,
@@ -242,10 +248,8 @@ const ManageCategory = () => {
             className="text-[15px] p-[11px] border-2 border-gray-100 rounded-[7px] outline-none w-[300px]"
             type="text"
             placeholder="Tìm kiếm ..."
-            onChange={(e) => {
-              setClearSeach(e.target.value);
-            }}
-            value={clearSearch}
+            onChange={(e) => setValueSearch(e.target.value)}
+            value={valueSearch}
           />
         </div>
       ),
@@ -319,9 +323,14 @@ const ManageCategory = () => {
           <Table
             title="Danh mục từ vựng"
             columns={column}
-            data={categoryData}
+            data={categoryData.filter((category) =>
+              category.nameCategory
+                .toLowerCase()
+                .includes(valueSearch.toLowerCase())
+            )}
             maxH={300}
             groupButton={groupButton}
+            handleSearch={handleSearch}
           />
         </div>
         {showDes && (
